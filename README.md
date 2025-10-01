@@ -62,7 +62,7 @@ Sistem pemesanan hotel berbasis web yang lengkap dengan fitur admin panel, manaj
 
 ### 1. **Clone Repository**
 ```bash
-git clone https://github.com/username/hotelfuture.git
+git clone https://github.com/Angga-Activit/hotelfuture.git
 cd hotelfuture
 ```
 
@@ -368,7 +368,7 @@ EXPOSE 80
 - ✅ Sistem cetak dengan 2 format berbeda
 - ✅ Validasi pembayaran yang dipermudah
 
-### **v1.0.0** (2024-12-01)
+### **v1.0.0** (2025-12-01)
 - ✅ Sistem booking hotel dasar
 - ✅ User registration dan login
 - ✅ Admin panel sederhana
@@ -377,8 +377,8 @@ EXPOSE 80
 ## 📞 Support
 
 - **Email**: support@hotelfuture.com
-- **Documentation**: [Wiki](https://github.com/username/hotelfuture/wiki)
-- **Issues**: [GitHub Issues](https://github.com/username/hotelfuture/issues)
+- **Documentation**: [Wiki](https://github.com/Angga-Activit/hotelfuture/wiki)
+- **Issues**: [GitHub Issues](https://github.com/Angga-Activit/hotelfuture/issues)
 
 ## 📄 License
 
@@ -386,6 +386,6 @@ MIT License - lihat file [LICENSE](LICENSE) untuk detail lengkap.
 
 ---
 
-**Dibuat dengan ❤️ oleh Tim HotelFuture**
+**Dibuat dengan ❤️ oleh Angga Kaseppp Pisannnn**
 
 > **Note**: Sistem ini dibuat untuk keperluan pembelajaran dan demo. Untuk production, pastikan menambahkan security layer tambahan dan testing yang komprehensif.
