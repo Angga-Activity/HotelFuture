@@ -378,8 +378,6 @@ function calculateTotalPrice() {
         }
     }
 }
-
-// Format currency function
 function formatRupiah(amount) {
     return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
 }

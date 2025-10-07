@@ -18,6 +18,8 @@
   "homepage": "https://github.com/Angga-Activity/HotelFuture#readme",
   "description": "",
   "dependencies": {
+    "axios": "^1.12.2",
+    "express": "^5.1.0",
     "json": "^11.0.0"
   }
 }

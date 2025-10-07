@@ -1,21 +1,21 @@
 <?php
 require_once 'config.php';
 
-// User Functions
+
 function registerUser($nama_depan, $nama_belakang, $email, $password) {
     global $pdo;
     
-    // Check if email already exists
+
     $stmt = $pdo->prepare("SELECT id_pengguna FROM pengguna WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
-        return false; // Email already exists
+        return false; 
     }
     
-    // Hash password
+    
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    // Insert new user
+
     $stmt = $pdo->prepare("INSERT INTO pengguna (nama_depan, nama_belakang, email, password, hak_akses, tanggal_daftar) VALUES (?, ?, ?, ?, 'user', NOW())");
     return $stmt->execute([$nama_depan, $nama_belakang, $email, $hashed_password]);
 }

@@ -155,7 +155,6 @@ $recent_hotels = array_slice($recent_hotels, 0, 6); // Show only 6 hotels
         </div>
     </section>
 
-    <!-- Hotel Recommendations -->
     <div class="container py-4">
         <div class="card">
             <div class="card-header">

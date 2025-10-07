@@ -1,31 +1,31 @@
-// HotelFuture - Main JavaScript Functions
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Bootstrap tooltips and popovers
+
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Initialize animations
+
     initAnimations();
     
-    // Initialize search functionality
+
     initSearch();
     
-    // Initialize payment methods
+    
     initPaymentMethods();
     
-    // Initialize date validation
+    
     initDateValidation();
     
-    // Initialize dynamic content loading
+
     initDynamicContent();
 });
 
-// Animation Functions
+
 function initAnimations() {
-    // Add fade-in animation to cards
+
     const cards = document.querySelectorAll('.card, .hotel-card');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -40,7 +40,7 @@ function initAnimations() {
     });
 }
 
-// Search Functions
+
 function initSearch() {
     const searchForm = document.getElementById('searchForm');
     if (searchForm) {
@@ -412,7 +412,7 @@ function validatePassword(password) {
     return password.length >= 8;
 }
 
-// Real-time form validation
+
 document.addEventListener('input', function(e) {
     if (e.target.type === 'email') {
         const isValid = validateEmail(e.target.value);
@@ -438,7 +438,7 @@ function toggleFieldValidation(field, isValid) {
     }
 }
 
-// AJAX Form Submission
+
 function submitFormAjax(formId, successCallback) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -450,7 +450,7 @@ function submitFormAjax(formId, successCallback) {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         
-        // Disable submit button and show loading
+
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
         
