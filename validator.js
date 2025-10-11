@@ -1,4 +1,4 @@
-// HotelFuture - Client-side Validation
+
 
 class FormValidator {
     constructor(formId) {
@@ -10,12 +10,11 @@ class FormValidator {
     init() {
         if (!this.form) return;
         
-        // Add real-time validation
+      
         this.form.addEventListener('input', (e) => {
             this.validateField(e.target);
         });
 
-        // Add form submission validation
         this.form.addEventListener('submit', (e) => {
             if (!this.validateForm()) {
                 e.preventDefault();
@@ -30,10 +29,8 @@ class FormValidator {
         let isValid = true;
         let errorMessage = '';
 
-        // Clear previous error
         delete this.errors[fieldName];
 
-        // Required field validation
         if (field.hasAttribute('required') && !value) {
             isValid = false;
             errorMessage = 'Field ini wajib diisi';

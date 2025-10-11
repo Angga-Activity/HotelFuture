@@ -298,15 +298,21 @@ $locations = $stmt->fetchAll();
                     <p><i class="fas fa-map-marker-alt"></i> Bandung, Indonesia</p>
                 </div>
                 
-                <div class="col-lg-4 mb-4">
-                    <h5>Ikuti Kami</h5>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3"><i class="fab fa-whatsapp fa-2x"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-2x"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-tiktok fa-2x"></i></a>
-                    </div>
-                </div>
-            </div>
+              <div class="col-lg-4 mb-4">
+    <h5>Ikuti Kami</h5>
+    <div class="social-links">
+        <a href="https://wa.me/6282129952530 target="_blank" class="text-light me-3">
+            <i class="fab fa-whatsapp fa-2x"></i>
+        </a>
+        <a href="https://instagram.com/angga_Activity" target="_blank" class="text-light me-3">
+            <i class="fab fa-instagram fa-2x"></i>
+        </a>
+        <a href="https://github.com/Angga-Activity" target="_blank" class="text-light me-3">
+            <i class="fab fa-github fa-2x"></i>
+        </a>
+    </div>
+</div>
+
             
             <hr class="my-4">
             

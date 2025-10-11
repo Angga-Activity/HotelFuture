@@ -2,12 +2,12 @@
 require_once 'config.php';
 require_once 'functions.php';
 
-// Check if user is logged in
+
 if (!isLoggedIn()) {
     redirect('login.php');
 }
 
-// Get user bookings
+
 $bookings = getUserBookings($_SESSION['user_id']);
 ?>
 
@@ -21,8 +21,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
-<body>
-    <!-- Header -->
+<body> 
     <header class="header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">

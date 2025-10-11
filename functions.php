@@ -38,7 +38,7 @@ function loginUser($email, $password) {
     return false;
 }
 
-// Hotel Functions
+
 function getAllHotels($search = '', $location = '', $min_price = 0, $max_price = 999999999) {
     global $pdo;
     
