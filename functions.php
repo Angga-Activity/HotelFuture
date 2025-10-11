@@ -143,7 +143,7 @@ function getUserBookings($user_id, $status = '') {
     return $stmt->fetchAll();
 }
 
-// Admin Functions
+
 function getAllUsers() {
     global $pdo;
     

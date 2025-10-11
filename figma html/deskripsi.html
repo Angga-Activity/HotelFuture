@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Grand Jakarta - HotelFuture</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --secondary-blue: #2c5282;
+            --accent-blue: #3182ce;
+            --light-gray: #f7fafc;
+            --medium-gray: #718096;
+            --dark-gray: #2d3748;
+            --white: #ffffff;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --shadow: 0 10px 25px rgba(26, 54, 93, 0.1);
+            --gradient: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            min-height: 100vh;
+            /* Optimized for 1080px viewport */
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffffff, #cbd5e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 16px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #cbd5e0 !important;
+            transform: translateY(-2px);
+        }
+
+        /* Container optimized for 1080px */
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            background: var(--white);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(26, 54, 93, 0.15);
+        }
+
+        .card-header {
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            padding: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Hotel Image Styles - Optimized for 1080px viewport */
+        .hotel-image-gallery {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-top {
+            height: 320px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .card:hover .card-img-top {
+            transform: scale(1.03);
+        }
+
+        /* Gallery Thumbnails - Adjusted for 1080px */
+        .gallery-thumbnails {
+            padding: 12px;
+        }
+
+        .gallery-thumb {
+            height: 65px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Photo Location Markers */
+        .photo-marker {
+            position: absolute;
+            background: rgba(26, 54, 93, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .photo-marker.main-photo {
+            top: 12px;
+            left: 12px;
+            background: var(--danger);
+        }
+
+        .photo-marker.gallery-photo {
+            top: 12px;
+            right: 12px;
+            background: var(--warning);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Hotel Info - Adjusted spacing for 1080px */
+        .hotel-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+
+        .hotel-location {
+            color: var(--medium-gray);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0;
+        }
+
+        .hotel-price-large {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--danger);
+        }
+
+        /* Alert Styles */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .alert-warning {
+            background: rgba(214, 158, 46, 0.1);
+            color: var(--warning);
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-info {
+            background: rgba(49, 130, 206, 0.1);
+            color: var(--accent-blue);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        /* Buttons - Optimized for 1080px */
+        .btn-primary {
+            background: var(--gradient);
+            border: none;
+            padding: 10px 24px;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4);
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            padding: 10px 24px;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--accent-blue);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        /* Form Styles - Compact for 1080px */
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+            background: var(--white);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        /* Price Summary - Compact */
+        .price-summary {
+            background: var(--light-gray);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .price-summary .d-flex {
+            margin-bottom: 8px;
+        }
+
+        .price-summary hr + .d-flex {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--primary-blue);
+            margin-top: 8px;
+        }
+
+        /* Facilities - Compact layout */
+        .hotel-facilities h4 {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hotel-facilities ul li {
+            padding: 4px 0;
+            font-size: 14px;
+        }
+
+        /* Map Container - Adjusted height for 1080px */
+        .map-container {
+            border-radius: 12px;
+            overflow: hidden;
+            height: 250px;
+            border: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 30px 0 15px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-item {
+            font-size: 14px;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1080px) {
+            body {
+                max-width: 100%;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hotel-name {
+                font-size: 1.5rem;
+            }
+            
+            .card-img-top {
+                height: 250px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .gallery-thumb {
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hotel-name {
+                font-size: 1.3rem;
+            }
+            
+            .hotel-price-large {
+                font-size: 1.3rem;
+            }
+            
+            .card-img-top {
+                height: 200px;
+            }
+        }
+
+        /* Layout optimization for 1080px viewport */
+        .hotel-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .hotel-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-hotel"></i> HotelFuture
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showLogin()">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showRegister()">
+                                <i class="fas fa-user-plus"></i> Daftar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <section class="py-2 bg-light">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="index.html">Hotel</a></li>
+                    <li class="breadcrumb-item active">Hotel Grand Jakarta</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Hotel Details -->
+    <section class="py-4">
+        <div class="container">
+            <div class="hotel-content">
+                <!-- Hotel Images -->
+                <div class="hotel-images">
+                    <div class="card">
+                        <div class="hotel-image-gallery">
+                            <!-- 📸 FOTO UTAMA HOTEL - LOKASI 1 -->
+                            <div class="photo-marker main-photo">📸 FOTO UTAMA</div>
+                            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                                 class="card-img-top" alt="Hotel Grand Jakarta - Tampak Depan" 
+                                 id="mainImage">
+                            
+                            <!-- Marker untuk galeri foto tambahan -->
+                            <div class="photo-marker gallery-photo">📷 GALERI</div>
+                        </div>
+                        
+                        <!-- Gallery Thumbnails -->
+                        <div class="gallery-thumbnails">
+                            <div class="row g-2">
+                                <div class="col-3">
+                                    <!-- 📸 FOTO KAMAR - LOKASI 2 -->
+                                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                                         class="img-fluid gallery-thumb" alt="Kamar Hotel" 
+                                         data-full="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+                                </div>
+                                <div class="col-3">
+                                    <!-- 📸 FOTO KOLAM RENANG - LOKASI 3 -->
+                                    <img src="https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                                         class="img-fluid gallery-thumb" alt="Kolam Renang" 
+                                         data-full="https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+                                </div>
+                                <div class="col-3">
+                                    <!-- 📸 FOTO RESTAURANT - LOKASI 4 -->
+                                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                                         class="img-fluid gallery-thumb" alt="Restaurant" 
+                                         data-full="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+                                </div>
+                                <div class="col-3">
+                                    <!-- 📸 FOTO LOBBY - LOKASI 5 -->
+                                    <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                                         class="img-fluid gallery-thumb" alt="Lobby Hotel" 
+                                         data-full="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h1 class="hotel-name mb-2">
+                                        Hotel Grand Jakarta
+                                    </h1>
+                                    <p class="hotel-location text-muted mb-0">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Jakarta Pusat, DKI Jakarta
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <div class="hotel-price-large">
+                                        Rp 850.000
+                                    </div>
+                                    <small class="text-muted">per malam</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Stock Warning -->
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Kamar hampir habis!</strong> Hanya tersisa 2 kamar.
+                            </div>
+                            
+                            <!-- Hotel Description -->
+                            <div class="hotel-description mb-3">
+                                <h4><i class="fas fa-info-circle"></i> Deskripsi Hotel</h4>
+                                <p>Hotel Grand Jakarta adalah hotel mewah bintang 5 yang terletak di jantung kota Jakarta. Dengan desain modern dan fasilitas lengkap, hotel ini menawarkan pengalaman menginap yang tak terlupakan.</p>
+                            </div>
+                            
+                            <!-- Hotel Facilities -->
+                            <div class="hotel-facilities mb-3">
+                                <h4><i class="fas fa-star"></i> Fasilitas</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-wifi text-primary"></i> WiFi Gratis</li>
+                                            <li><i class="fas fa-swimming-pool text-primary"></i> Kolam Renang</li>
+                                            <li><i class="fas fa-dumbbell text-primary"></i> Fitness Center</li>
+                                            <li><i class="fas fa-utensils text-primary"></i> Restaurant</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-car text-primary"></i> Parkir Gratis</li>
+                                            <li><i class="fas fa-concierge-bell text-primary"></i> Room Service</li>
+                                            <li><i class="fas fa-snowflake text-primary"></i> AC</li>
+                                            <li><i class="fas fa-tv text-primary"></i> TV Cable</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Google Maps -->
+                            <div class="hotel-map">
+                                <h4><i class="fas fa-map"></i> Lokasi</h4>
+                                <div class="map-container">
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613!3d-6.2087634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sHotel%20Indonesia%20Kempinski!5e0!3m2!1sen!2sid!4v1635123456789!5m2!1sen!2sid" 
+                                            width="100%" height="250" style="border:0; border-radius: 12px;" 
+                                            allowfullscreen="" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Panel -->
+                <div class="booking-panel">
+                    <div class="card sticky-top" style="top: 80px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-calendar-check"></i> Pesan Sekarang</h4>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Login diperlukan</strong><br>
+                                    Silakan login terlebih dahulu untuk melakukan pemesanan.
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                <button class="btn btn-primary" onclick="showLogin()">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="showRegister()">
+                                    <i class="fas fa-user-plus"></i> Daftar
+                                </button>
+                            </div>
+                            
+                            <!-- Quick Booking Form (Hidden by default, shown after login) -->
+                            <form id="quickBookingForm" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Check-in</label>
+                                    <input type="date" class="form-control" id="checkinDate" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Check-out</label>
+                                    <input type="date" class="form-control" id="checkoutDate" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Kamar</label>
+                                            <select class="form-select" id="roomCount" required>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tamu</label>
+                                            <select class="form-select" required>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Price Calculation -->
+                                <div class="price-summary">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Harga per malam:</span>
+                                        <span>Rp 850.000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Jumlah malam:</span>
+                                        <span id="nightCount">-</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total:</span>
+                                        <span id="totalPrice">-</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-calendar-check"></i> Lanjut Pemesanan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Gallery functionality
+        document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                const mainImage = document.getElementById('mainImage');
+                const fullImageUrl = this.getAttribute('data-full');
+                mainImage.src = fullImageUrl;
+                mainImage.alt = this.alt;
+            });
+        });
+
+        // Set minimum date to today
+        function initDateValidation() {
+            const today = new Date().toISOString().split('T')[0];
+            const checkinDate = document.getElementById('checkinDate');
+            const checkoutDate = document.getElementById('checkoutDate');
+            
+            if (checkinDate && checkoutDate) {
+                checkinDate.min = today;
+                checkoutDate.min = today;
+                
+                checkinDate.addEventListener('change', calculatePrice);
+                checkoutDate.addEventListener('change', calculatePrice);
+                document.getElementById('roomCount').addEventListener('change', calculatePrice);
+            }
+        }
+        
+        // Calculate price when dates change
+        function calculatePrice() {
+            const checkin = document.getElementById('checkinDate').value;
+            const checkout = document.getElementById('checkoutDate').value;
+            const rooms = parseInt(document.getElementById('roomCount').value);
+            const pricePerNight = 850000;
+            
+            if (checkin && checkout) {
+                const checkinDate = new Date(checkin);
+                const checkoutDate = new Date(checkout);
+                const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+                
+                if (nights > 0) {
+                    const total = nights * rooms * pricePerNight;
+                    document.getElementById('nightCount').textContent = nights + ' malam';
+                    document.getElementById('totalPrice').textContent = formatRupiah(total);
+                    
+                    // Update checkout minimum date
+                    const nextDay = new Date(checkinDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    document.getElementById('checkoutDate').min = nextDay.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('nightCount').textContent = '-';
+                    document.getElementById('totalPrice').textContent = '-';
+                }
+            }
+        }
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+
+        // Navigation functions
+        function showLogin() {
+            alert('Mengarahkan ke halaman login...');
+            // Simulate login success for demo
+            setTimeout(() => {
+                document.querySelector('.alert-info').style.display = 'none';
+                document.querySelector('.d-grid').style.display = 'none';
+                document.getElementById('quickBookingForm').style.display = 'block';
+                initDateValidation();
+            }, 1000);
+        }
+
+        function showRegister() {
+            alert('Mengarahkan ke halaman registrasi...');
+        }
+
+        // Form submission
+        document.getElementById('quickBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Mengarahkan ke halaman pemesanan...');
+        });
+
+        // Initialize on page load
+        window.onload = function() {
+            initDateValidation();
+        };
+    </script>
+</body>
+</html>
