@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - HotelAurora</title>
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --secondary-blue: #2c5282;
+            --accent-blue: #3182ce;
+            --light-gray: #f7fafc;
+            --medium-gray: #718096;
+            --dark-gray: #2d3748;
+            --white: #ffffff;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --shadow: 0 10px 25px rgba(26, 54, 93, 0.1);
+            --gradient: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .register-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .register-header {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .register-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .register-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .register-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .form-control.is-valid {
+            border-color: var(--success);
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.4);
+        }
+
+        .login-link {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+
+        .login-link a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .strength-weak {
+            color: var(--danger);
+        }
+
+        .strength-medium {
+            color: var(--warning);
+        }
+
+        .strength-strong {
+            color: var(--success);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Icons */
+        .icon-hotel::before { content: "🏨"; }
+        .icon-home::before { content: "🏠"; }
+        .icon-login::before { content: "🔑"; }
+        .icon-register::before { content: "📝"; }
+        .icon-user::before { content: "👤"; }
+        .icon-email::before { content: "📧"; }
+        .icon-phone::before { content: "📱"; }
+        .icon-lock::before { content: "🔒"; }
+
+        /* Responsive Design */
+        @media (max-width: 1920px) {
+            .navbar {
+                max-width: 1920px;
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                max-width: 768px;
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+
+            .navbar-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .register-container {
+                max-width: 100%;
+            }
+
+            .register-header {
+                padding: 25px 20px;
+            }
+
+            .register-body {
+                padding: 25px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .navbar {
+                max-width: 390px;
+                padding: 15px;
+            }
+
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .main-content {
+                padding: 15px 10px;
+            }
+
+            .register-header {
+                padding: 20px 15px;
+            }
+
+            .register-body {
+                padding: 20px 15px;
+            }
+
+            .register-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .form-control {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading State */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(56, 161, 105, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-danger {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-warning {
+            background: rgba(214, 158, 46, 0.1);
+            color: var(--warning);
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Validation Messages */
+        .validation-message {
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .validation-message.show {
+            display: block;
+        }
+
+        .validation-message.error {
+            color: var(--danger);
+        }
+
+        .validation-message.success {
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <a class="navbar-brand" href="#" onclick="goHome()">
+                <span class="icon-hotel"></span> HotelAurora
+            </a>
+            
+            <ul class="navbar-nav">
+                <li><a class="nav-link" href="#" onclick="goHome()"><span class="icon-home"></span> Beranda</a></li>
+                <li><a class="nav-link" href="#" onclick="goLogin()"><span class="icon-login"></span> Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="register-container">
+            <!-- Register Header -->
+            <div class="register-header">
+                <h2><span class="icon-register"></span> Daftar</h2>
+                <p class="register-subtitle">Buat akun HotelAurora baru</p>
+            </div>
+
+            <!-- Register Body -->
+            <div class="register-body">
+                <!-- Alert Messages -->
+                <div id="alertMessage" class="alert"></div>
+
+                <!-- Register Form -->
+                <form id="registerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="namaDepan">Nama Depan</label>
+                            <input type="text" class="form-control" id="namaDepan" name="namaDepan" required 
+                                   placeholder="Nama depan">
+                            <div class="validation-message" id="namaDepanMsg"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="namaBelakang">Nama Belakang</label>
+                            <input type="text" class="form-control" id="namaBelakang" name="namaBelakang" required 
+                                   placeholder="Nama belakang">
+                            <div class="validation-message" id="namaBelakangMsg"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required 
+                               placeholder="Masukkan email Anda">
+                        <div class="validation-message" id="emailMsg"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="nomorTelepon">Nomor Telepon</label>
+                        <input type="tel" class="form-control" id="nomorTelepon" name="nomorTelepon" required 
+                               placeholder="08xxxxxxxxxx">
+                        <div class="validation-message" id="nomorTeleponMsg"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required 
+                               placeholder="Minimal 8 karakter">
+                        <div class="validation-message" id="passwordMsg"></div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="konfirmasiPassword">Konfirmasi Password</label>
+                        <input type="password" class="form-control" id="konfirmasiPassword" name="konfirmasiPassword" required 
+                               placeholder="Ulangi password Anda">
+                        <div class="validation-message" id="konfirmasiPasswordMsg"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="registerBtn">
+                        <span class="icon-register"></span> Daftar
+                    </button>
+                </form>
+
+                <!-- Login Link -->
+                <div class="login-link">
+                    Sudah punya akun? <a href="#" onclick="goLogin()">Login di sini</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+     <p>&copy; 2025 HotelAurora. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Form elements
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const alertMessage = document.getElementById('alertMessage');
+
+        // Form inputs
+        const namaDepan = document.getElementById('namaDepan');
+        const namaBelakang = document.getElementById('namaBelakang');
+        const email = document.getElementById('email');
+        const nomorTelepon = document.getElementById('nomorTelepon');
+        const password = document.getElementById('password');
+        const konfirmasiPassword = document.getElementById('konfirmasiPassword');
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus on first input
+            namaDepan.focus();
+            
+            // Add form validation
+            setupFormValidation();
+        });
+
+        // Form validation setup
+        function setupFormValidation() {
+            namaDepan.addEventListener('input', () => validateName(namaDepan, 'namaDepanMsg'));
+            namaBelakang.addEventListener('input', () => validateName(namaBelakang, 'namaBelakangMsg'));
+            email.addEventListener('input', validateEmailField);
+            nomorTelepon.addEventListener('input', validatePhoneField);
+            password.addEventListener('input', validatePasswordField);
+            konfirmasiPassword.addEventListener('input', validateConfirmPassword);
+        }
+
+        // Validation functions
+        function validateName(field, msgId) {
+            const value = field.value.trim();
+            const msg = document.getElementById(msgId);
+            
+            if (value.length === 0) {
+                setFieldValidation(field, msg, '', '');
+                return false;
+            } else if (value.length < 2) {
+                setFieldValidation(field, msg, 'Nama minimal 2 karakter', 'error');
+                return false;
+            } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+                setFieldValidation(field, msg, 'Nama hanya boleh berisi huruf', 'error');
+                return false;
+            } else {
+                setFieldValidation(field, msg, 'Valid', 'success');
+                return true;
+            }
+        }
+
+        function validateEmailField() {
+            const value = email.value.trim();
+            const msg = document.getElementById('emailMsg');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (value.length === 0) {
+                setFieldValidation(email, msg, '', '');
+                return false;
+            } else if (!emailRegex.test(value)) {
+                setFieldValidation(email, msg, 'Format email tidak valid', 'error');
+                return false;
+            } else {
+                setFieldValidation(email, msg, 'Email valid', 'success');
+                return true;
+            }
+        }
+
+        function validatePhoneField() {
+            const value = nomorTelepon.value.trim();
+            const msg = document.getElementById('nomorTeleponMsg');
+            const phoneRegex = /^08[0-9]{8,11}$/;
+            
+            if (value.length === 0) {
+                setFieldValidation(nomorTelepon, msg, '', '');
+                return false;
+            } else if (!phoneRegex.test(value)) {
+                setFieldValidation(nomorTelepon, msg, 'Format: 08xxxxxxxxxx (10-13 digit)', 'error');
+                return false;
+            } else {
+                setFieldValidation(nomorTelepon, msg, 'Nomor telepon valid', 'success');
+                return true;
+            }
+        }
+
+        function validatePasswordField() {
+            const value = password.value;
+            const msg = document.getElementById('passwordMsg');
+            const strengthIndicator = document.getElementById('passwordStrength');
+            
+            if (value.length === 0) {
+                setFieldValidation(password, msg, '', '');
+                strengthIndicator.textContent = '';
+                return false;
+            } else if (value.length < 8) {
+                setFieldValidation(password, msg, 'Password minimal 8 karakter', 'error');
+                strengthIndicator.textContent = 'Terlalu pendek';
+                strengthIndicator.className = 'password-strength strength-weak';
+                return false;
+            } else {
+                // Check password strength
+                const strength = calculatePasswordStrength(value);
+                if (strength < 3) {
+                    setFieldValidation(password, msg, 'Password lemah', 'error');
+                    strengthIndicator.textContent = 'Lemah';
+                    strengthIndicator.className = 'password-strength strength-weak';
+                    return false;
+                } else if (strength < 5) {
+                    setFieldValidation(password, msg, 'Password sedang', 'success');
+                    strengthIndicator.textContent = 'Sedang';
+                    strengthIndicator.className = 'password-strength strength-medium';
+                    return true;
+                } else {
+                    setFieldValidation(password, msg, 'Password kuat', 'success');
+                    strengthIndicator.textContent = 'Kuat';
+                    strengthIndicator.className = 'password-strength strength-strong';
+                    return true;
+                }
+            }
+        }
+
+        function validateConfirmPassword() {
+            const value = konfirmasiPassword.value;
+            const msg = document.getElementById('konfirmasiPasswordMsg');
+            
+            if (value.length === 0) {
+                setFieldValidation(konfirmasiPassword, msg, '', '');
+                return false;
+            } else if (value !== password.value) {
+                setFieldValidation(konfirmasiPassword, msg, 'Password tidak cocok', 'error');
+                return false;
+            } else {
+                setFieldValidation(konfirmasiPassword, msg, 'Password cocok', 'success');
+                return true;
+            }
+        }
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            
+            // Length
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            
+            // Character types
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            return strength;
+        }
+
+        function setFieldValidation(field, msgElement, message, type) {
+            // Update field styling
+            field.classList.remove('is-valid', 'is-invalid');
+            if (type === 'success') {
+                field.classList.add('is-valid');
+            } else if (type === 'error') {
+                field.classList.add('is-invalid');
+            }
+            
+            // Update message
+            msgElement.textContent = message;
+            msgElement.className = `validation-message ${type} ${message ? 'show' : ''}`;
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                registerBtn.disabled = true;
+                registerBtn.innerHTML = '<span class="loading"></span> Memproses...';
+            } else {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<span class="icon-register"></span> Daftar';
+            }
+        }
+
+        // Handle form submission
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate all fields
+            const isNameDepanValid = validateName(namaDepan, 'namaDepanMsg');
+            const isNameBelakangValid = validateName(namaBelakang, 'namaBelakangMsg');
+            const isEmailValid = validateEmailField();
+            const isPhoneValid = validatePhoneField();
+            const isPasswordValid = validatePasswordField();
+            const isConfirmPasswordValid = validateConfirmPassword();
+            
+            if (!isNameDepanValid || !isNameBelakangValid || !isEmailValid || 
+                !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
+                showAlert('Mohon perbaiki kesalahan pada form!', 'danger');
+                return;
+            }
+            
+            // Simulate registration process
+            performRegistration();
+        });
+
+        function performRegistration() {
+            setLoading(true);
+            
+            // Simulate API call
+            setTimeout(() => {
+                setLoading(false);
+                
+                // Mock registration success
+                const userData = {
+                    namaDepan: namaDepan.value.trim(),
+                    namaBelakang: namaBelakang.value.trim(),
+                    email: email.value.trim(),
+                    nomorTelepon: nomorTelepon.value.trim()
+                };
+                
+                showAlert(`Pendaftaran berhasil! Selamat datang, ${userData.namaDepan}!`, 'success');
+                
+                // Reset form after success
+                setTimeout(() => {
+                    registerForm.reset();
+                    // Remove validation classes
+                    document.querySelectorAll('.form-control').forEach(field => {
+                        field.classList.remove('is-valid', 'is-invalid');
+                    });
+                    document.querySelectorAll('.validation-message').forEach(msg => {
+                        msg.classList.remove('show');
+                    });
+                    document.getElementById('passwordStrength').textContent = '';
+                    
+                    alert(`Pendaftaran berhasil!\n\nData yang terdaftar:\n- Nama: ${userData.namaDepan} ${userData.namaBelakang}\n- Email: ${userData.email}\n- Telepon: ${userData.nomorTelepon}\n\nDalam implementasi nyata:\n- Data akan disimpan ke database\n- Email verifikasi akan dikirim\n- Redirect ke halaman login`);
+                }, 2000);
+            }, 2000);
+        }
+
+        // Navigation functions
+        function goHome() {
+            alert('Mengarahkan ke halaman beranda...');
+        }
+
+        function goLogin() {
+            alert('Mengarahkan ke halaman login...');
+        }
+
+        // Auto-format phone number
+        nomorTelepon.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, ''); // Remove non-digits
+            if (value.length > 13) {
+                value = value.substring(0, 13); // Limit to 13 digits
+            }
+            this.value = value;
+        });
+
+        // Prevent spaces in email and phone
+        email.addEventListener('keypress', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+
+        nomorTelepon.addEventListener('keypress', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

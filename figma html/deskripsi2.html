@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Grand Jakarta - HotelAurora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%); color: #2d3748; line-height: 1.6; min-height: 100vh; margin: 0; padding: 0; box-sizing: border-box;">
+
+    <!-- Header -->
+    <header style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 1rem 0; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); position: sticky; top: 0; z-index: 1000;">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="user.html" style="font-size: 2rem; font-weight: bold; background: linear-gradient(45deg, #ffffff, #cbd5e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                    🏨 HotelAurora
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border: none;">
+                    <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox=\'0 0 30 30\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath stroke=\'rgba%28255, 255, 255, 0.75%29\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-miterlimit=\'10\' d=\'M4 7h22M4 15h22M4 23h22\'/%3E%3C/svg%3E');"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="user.html" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; text-decoration: none;">Dashboard</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="color: #ffffff !important; font-weight: 500; text-decoration: none;">
+                                <i class="fas fa-user"></i> John Doe
+                            </a>
+                            <ul class="dropdown-menu" style="border-radius: 15px; border: none; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1);">
+                                <li><a class="dropdown-item" href="user.html" style="transition: background 0.3s;">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="riwayat.html" style="transition: background 0.3s;">
+                                    <i class="fas fa-history"></i> Riwayat Transaksi
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="index.html" style="transition: background 0.3s;">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <section style="background: #ffffff; padding: 1rem 0; box-shadow: 0 2px 10px rgba(26, 54, 93, 0.05);">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" style="margin: 0; background: transparent;">
+                    <li class="breadcrumb-item"><a href="user.html" style="color: #3182ce; text-decoration: none;">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="user.html" style="color: #3182ce; text-decoration: none;">Hotel</a></li>
+                    <li class="breadcrumb-item active" style="color: #718096;">Hotel Grand Jakarta</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Hotel Details -->
+    <section style="padding: 2rem 0;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+                <!-- Hotel Images & Info -->
+                <div>
+                    <!-- Main Image -->
+                    <div style="position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); margin-bottom: 2rem;">
+                        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                             style="width: 100%; height: 400px; object-fit: cover;" alt="Hotel Grand Jakarta" id="mainImage">
+                        
+                        <!-- Photo Markers -->
+                        <div style="position: absolute; top: 15px; left: 15px; background: rgba(229, 62, 62, 0.9); color: white; padding: 6px 12px; border-radius: 16px; font-size: 11px; font-weight: bold;">
+                            📸 FOTO UTAMA
+                        </div>
+                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(214, 158, 46, 0.9); color: white; padding: 6px 12px; border-radius: 16px; font-size: 11px; font-weight: bold;">
+                            📷 GALERI
+                        </div>
+                    </div>
+                    
+                    <!-- Gallery Thumbnails -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                             style="height: 80px; object-fit: cover; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" 
+                             alt="Kamar Hotel" 
+                             onclick="changeMainImage(this.src, 'Kamar Hotel')"
+                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" 
+                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                        <img src="https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                             style="height: 80px; object-fit: cover; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" 
+                             alt="Kolam Renang" 
+                             onclick="changeMainImage(this.src, 'Kolam Renang')"
+                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" 
+                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                             style="height: 80px; object-fit: cover; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" 
+                             alt="Restaurant" 
+                             onclick="changeMainImage(this.src, 'Restaurant')"
+                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" 
+                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                        <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                             style="height: 80px; object-fit: cover; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" 
+                             alt="Lobby Hotel" 
+                             onclick="changeMainImage(this.src, 'Lobby Hotel')"
+                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" 
+                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                    </div>
+
+                    <!-- Hotel Info Card -->
+                    <div style="background: #ffffff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                            <div>
+                                <h1 style="font-size: 2.5rem; font-weight: bold; color: #1a365d; margin-bottom: 0.5rem;">
+                                    Hotel Grand Jakarta
+                                </h1>
+                                <p style="color: #718096; font-size: 1.2rem; margin: 0; display: flex; align-items: center;">
+                                    <i class="fas fa-map-marker-alt" style="margin-right: 0.5rem;"></i>
+                                    Jakarta Pusat, DKI Jakarta
+                                </p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 2rem; font-weight: bold; color: #e53e3e;">
+                                    Rp 850.000
+                                </div>
+                                <small style="color: #718096;">per malam</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Stock Warning -->
+                        <div style="background: rgba(214, 158, 46, 0.1); color: #d69e2e; border-left: 4px solid #d69e2e; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Kamar hampir habis!</strong> Hanya tersisa 2 kamar.
+                        </div>
+                        
+                        <!-- Description -->
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #1a365d; margin-bottom: 1rem; display: flex; align-items: center;">
+                                <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i> Deskripsi Hotel
+                            </h4>
+                            <p style="line-height: 1.8; text-align: justify;">
+                                Hotel Grand Jakarta adalah hotel mewah bintang 5 yang terletak di jantung kota Jakarta. Dengan desain modern dan fasilitas lengkap, hotel ini menawarkan pengalaman menginap yang tak terlupakan dengan pelayanan kelas dunia dan kemudahan akses ke berbagai tempat wisata dan pusat bisnis.
+                            </p>
+                        </div>
+                        
+                        <!-- Facilities -->
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #1a365d; margin-bottom: 1rem; display: flex; align-items: center;">
+                                <i class="fas fa-star" style="margin-right: 0.5rem;"></i> Fasilitas
+                            </h4>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <div>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-wifi" style="color: #1a365d; margin-right: 8px;"></i> WiFi Gratis</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-swimming-pool" style="color: #1a365d; margin-right: 8px;"></i> Kolam Renang</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-dumbbell" style="color: #1a365d; margin-right: 8px;"></i> Fitness Center</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-utensils" style="color: #1a365d; margin-right: 8px;"></i> Restaurant</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-car" style="color: #1a365d; margin-right: 8px;"></i> Parkir Gratis</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-concierge-bell" style="color: #1a365d; margin-right: 8px;"></i> Room Service</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-snowflake" style="color: #1a365d; margin-right: 8px;"></i> AC</li>
+                                        <li style="padding: 4px 0; display: flex; align-items: center;"><i class="fas fa-tv" style="color: #1a365d; margin-right: 8px;"></i> TV Cable</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Map -->
+                        <div>
+                            <h4 style="color: #1a365d; margin-bottom: 1rem; display: flex; align-items: center;">
+                                <i class="fas fa-map" style="margin-right: 0.5rem;"></i> Lokasi
+                            </h4>
+                            <div style="border-radius: 12px; overflow: hidden; height: 250px;">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613!3d-6.2087634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sHotel%20Indonesia%20Kempinski!5e0!3m2!1sen!2sid!4v1635123456789!5m2!1sen!2sid" 
+                                        width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Panel -->
+                <div style="position: sticky; top: 100px;">
+                    <div style="background: #ffffff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1);">
+                        <div style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 1rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0;"><i class="fas fa-calendar-check"></i> Pesan Sekarang</h4>
+                        </div>
+                        
+                        <form id="bookingForm">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-weight: 600; color: #2d3748; margin-bottom: 8px; display: block;">Check-in</label>
+                                <input type="date" id="checkinDate" required style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff; width: 100%;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-weight: 600; color: #2d3748; margin-bottom: 8px; display: block;">Check-out</label>
+                                <input type="date" id="checkoutDate" required style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff; width: 100%;">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="font-weight: 600; color: #2d3748; margin-bottom: 8px; display: block;">Kamar</label>
+                                    <select id="roomCount" style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff; width: 100%;">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label style="font-weight: 600; color: #2d3748; margin-bottom: 8px; display: block;">Tamu</label>
+                                    <select style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff; width: 100%;">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Summary -->
+                            <div style="background: #f7fafc; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Harga per malam:</span>
+                                    <span>Rp 850.000</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Jumlah malam:</span>
+                                    <span id="nightCount">-</span>
+                                </div>
+                                <hr style="margin: 8px 0;">
+                                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #1a365d;">
+                                    <span>Total:</span>
+                                    <span id="totalPrice">-</span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 24px; font-weight: 600; border-radius: 25px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3); width: 100%; color: #ffffff;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(26, 54, 93, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(26, 54, 93, 0.3)'">
+                                <i class="fas fa-calendar-check"></i> Lanjut Pemesanan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: #1a365d; color: #ffffff; padding: 3rem 0 2rem; margin-top: 4rem;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5 style="color: #ffffff; margin-bottom: 1rem;">HotelAurora</h5>
+                    <p style="color: #cbd5e0;">Sistem pemesanan hotel masa depan dengan teknologi terdepan untuk pengalaman menginap yang tak terlupakan.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 style="color: #ffffff; margin-bottom: 1rem;">Kontak</h5>
+                    <p style="color: #cbd5e0; margin-bottom: 0.5rem;">
+                        <i class="fas fa-envelope me-2"></i><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="20494e464f60484f54454c4655545552450e434f4d">[email&#160;protected]</a>
+                    </p>
+                    <p style="color: #cbd5e0; margin-bottom: 0.5rem;">
+                        <i class="fas fa-phone me-2"></i>+62 821 2995 2530
+                    </p>
+                    <p style="color: #cbd5e0;">
+                        <i class="fas fa-map-marker-alt me-2"></i>Jakarta, Indonesia
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5 style="color: #ffffff; margin-bottom: 1rem;">Ikuti Kami</h5>
+                    <div>
+                        <a href="#" style="color: #cbd5e0; text-decoration: none; margin-right: 1rem; font-size: 1.5rem;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" style="color: #cbd5e0; text-decoration: none; margin-right: 1rem; font-size: 1.5rem;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" style="color: #cbd5e0; text-decoration: none; margin-right: 1rem; font-size: 1.5rem;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                    <p style="color: #cbd5e0; margin-top: 1rem; font-size: 0.9rem;">
+                        Instagram: @angga_Activity<br>
+                        GitHub: Angga-Activity
+                    </p>
+                </div>
+            </div>
+            <hr style="border-color: #2c5282; margin: 2rem 0 1rem;">
+            <div class="text-center">
+                <p style="color: #cbd5e0; margin: 0;">&copy; 2025 HotelAurora. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Gallery functionality
+        function changeMainImage(src, alt) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = src;
+            mainImage.alt = alt;
+        }
+
+        // Set minimum date to today
+        function initDateValidation() {
+            const today = new Date().toISOString().split('T')[0];
+            const checkinDate = document.getElementById('checkinDate');
+            const checkoutDate = document.getElementById('checkoutDate');
+            
+            checkinDate.min = today;
+            checkoutDate.min = today;
+            
+            checkinDate.addEventListener('change', calculatePrice);
+            checkoutDate.addEventListener('change', calculatePrice);
+            document.getElementById('roomCount').addEventListener('change', calculatePrice);
+        }
+        
+        // Calculate price when dates change
+        function calculatePrice() {
+            const checkin = document.getElementById('checkinDate').value;
+            const checkout = document.getElementById('checkoutDate').value;
+            const rooms = parseInt(document.getElementById('roomCount').value);
+            const pricePerNight = 850000;
+            
+            if (checkin && checkout) {
+                const checkinDate = new Date(checkin);
+                const checkoutDate = new Date(checkout);
+                const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+                
+                if (nights > 0) {
+                    const total = nights * rooms * pricePerNight;
+                    document.getElementById('nightCount').textContent = nights + ' malam';
+                    document.getElementById('totalPrice').textContent = formatRupiah(total);
+                    
+                    // Update checkout minimum date
+                    const nextDay = new Date(checkinDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    document.getElementById('checkoutDate').min = nextDay.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('nightCount').textContent = '-';
+                    document.getElementById('totalPrice').textContent = '-';
+                }
+            }
+        }
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Pemesanan berhasil! Anda akan diarahkan ke halaman pembayaran.');
+        });
+
+        // Initialize on page load
+        window.onload = function() {
+            initDateValidation();
+        };
+    </script>
+    
+    <style>
+        /* Desktop - 1920px */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1800px;
+            }
+            h1 {
+                font-size: 2.5rem !important;
+            }
+            h4 {
+                font-size: 1.2rem !important;
+            }
+        }
+        
+        /* Tablet - 768px */
+        @media (max-width: 992px) {
+            [style*="grid-template-columns: 2fr 1fr"] {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            [style*="position: sticky"] {
+                position: static !important;
+                margin-top: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            h1 {
+                font-size: 2rem !important;
+            }
+            .navbar-brand {
+                font-size: 1.5rem !important;
+            }
+            [style*="height: 400px"] {
+                height: 250px !important;
+            }
+            [style*="padding: 2rem"] {
+                padding: 1rem !important;
+            }
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            [style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* Mobile - 390px */
+        @media (max-width: 390px) {
+            body {
+                font-size: 13px;
+            }
+            h1 {
+                font-size: 1.75rem !important;
+            }
+            .container {
+                padding: 0 15px;
+            }
+            [style*="height: 250px"] {
+                height: 200px !important;
+            }
+            [style*="font-size: 2.5rem"] {
+                font-size: 1.5rem !important;
+            }
+        }
+        
+        /* Focus styles */
+        input:focus, select:focus {
+            border-color: #3182ce !important;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1) !important;
+            outline: none;
+        }
+        
+        .dropdown-item:hover {
+            background: #f7fafc !important;
+        }
+    </style>
+</body>
+</html>

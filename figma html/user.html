@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HotelAurora - Sistem Pemesanan Hotel Masa Depan</title>
+    <title>HotelAurora - Dashboard User</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
     <header style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 1rem 0; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); position: sticky; top: 0; z-index: 1000;">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="index.html" style="font-size: 2rem; font-weight: bold; background: linear-gradient(45deg, #ffffff, #cbd5e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <a class="navbar-brand" href="user.html" style="font-size: 2rem; font-weight: bold; background: linear-gradient(45deg, #ffffff, #cbd5e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
                     🏨 HotelAurora
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border: none;">
@@ -22,13 +22,21 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="index.html" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; position: relative; text-decoration: none;">Beranda</a>
+                            <a class="nav-link" href="user.html" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; position: relative; text-decoration: none;">Dashboard</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="login.html" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; position: relative; text-decoration: none;">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="daftar.html" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; position: relative; text-decoration: none;">Daftar</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="color: #ffffff !important; font-weight: 500; transition: all 0.3s ease; position: relative; text-decoration: none;">
+                                <i class="fas fa-user"></i> John Doe
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="riwayat.html">
+                                    <i class="fas fa-history"></i> Riwayat Transaksi
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="index.html">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -41,20 +49,73 @@
         <div class="container">
             <div style="animation: fadeIn 0.6s ease-in;">
                 <h1 style="font-size: 3.5rem; font-weight: bold; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                    Selamat Datang di HotelAurora
+                    Selamat Datang, John!
                 </h1>
                 <p style="font-size: 1.5rem; margin-bottom: 2rem; color: #cbd5e0;">
-                    Sistem pemesanan hotel masa depan dengan teknologi terdepan
+                    Temukan hotel impian Anda dan nikmati pengalaman menginap terbaik
                 </p>
-                <a href="login.html" style="background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%); color: #1a365d; border: none; padding: 15px 40px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3); text-decoration: none; display: inline-block;">
-                    Mulai Sekarang
-                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions Section -->
+    <section style="padding: 4rem 0; margin: -2rem 0 2rem 0;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                
+                <!-- Cari Hotel Card -->
+                <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease; text-align: center; padding: 2rem;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ffffff; font-size: 2rem;">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5 style="color: #1a365d; margin-bottom: 1rem; font-weight: bold;">Cari Hotel</h5>
+                    <p style="color: #718096; margin-bottom: 1.5rem;">Temukan hotel sesuai kebutuhan</p>
+                    <a href="#search-section" style="background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3); color: #ffffff; text-decoration: none; display: inline-block;">
+                        <i class="fas fa-search"></i> Mulai Cari
+                    </a>
+                </div>
+
+                <!-- Riwayat Booking Card -->
+                <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease; text-align: center; padding: 2rem;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #38a169 0%, #2f855a 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ffffff; font-size: 2rem;">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h5 style="color: #1a365d; margin-bottom: 1rem; font-weight: bold;">Riwayat Booking</h5>
+                    <p style="color: #718096; margin-bottom: 1.5rem;">Lihat semua pemesanan Anda</p>
+                    <a href="riwayat.html" style="background: linear-gradient(135deg, #38a169 0%, #2f855a 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3); color: #ffffff; text-decoration: none; display: inline-block;">
+                        <i class="fas fa-history"></i> Lihat Riwayat
+                    </a>
+                </div>
+
+                <!-- Edit Profil Card -->
+                <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease; text-align: center; padding: 2rem;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ffffff; font-size: 2rem;">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h5 style="color: #1a365d; margin-bottom: 1rem; font-weight: bold;">Edit Profil</h5>
+                    <p style="color: #718096; margin-bottom: 1.5rem;">Perbarui informasi akun</p>
+                    <button style="background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(214, 158, 46, 0.3); color: #ffffff;" data-bs-toggle="modal" data-bs-target="#profileModal">
+                        <i class="fas fa-user-edit"></i> Edit Profil
+                    </button>
+                </div>
+
+                <!-- Bantuan Card -->
+                <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease; text-align: center; padding: 2rem;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ffffff; font-size: 2rem;">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h5 style="color: #1a365d; margin-bottom: 1rem; font-weight: bold;">Bantuan</h5>
+                    <p style="color: #718096; margin-bottom: 1.5rem;">Hubungi customer service</p>
+                    <button style="background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3); color: #ffffff;">
+                        <i class="fas fa-headset"></i> Hubungi CS
+                    </button>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Search Section -->
-    <section style="background: #ffffff; padding: 3rem 0; margin: 2rem 0; border-radius: 20px; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1);">
+    <section id="search-section" style="background: #ffffff; padding: 3rem 0; margin: 2rem 0; border-radius: 20px; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1);">
         <div class="container">
             <h2 style="text-align: center; color: #1a365d; margin-bottom: 2rem; font-weight: bold;">Cari Hotel Impian Anda</h2>
             <div style="background: #f7fafc; padding: 2rem; border-radius: 15px;">
@@ -96,7 +157,34 @@
         <h2 style="text-align: center; color: #1a365d; margin-bottom: 3rem; font-weight: bold;">Hotel Pilihan Terbaik</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin: 2rem 0;">
             
-            <!-- Hotel Card 1 - Bali Beach Resort -->
+            <!-- Hotel Card 1 - Hotel Grand Jakarta -->
+            <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
+                <div style="height: 200px; background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop') center/cover; position: relative;">
+                    <div style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 8px 15px; border-radius: 25px; font-weight: bold;">
+                        Rp 1.200.000
+                    </div>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <h3 style="font-size: 1.5rem; font-weight: bold; color: #1a365d; margin-bottom: 0.5rem;">Hotel Grand Jakarta</h3>
+                    <p style="color: #718096; margin-bottom: 1rem; display: flex; align-items: center;">
+                        <i class="fas fa-map-marker-alt" style="margin-right: 0.5rem;"></i>Jakarta Pusat
+                    </p>
+                    <p style="color: #2d3748; margin-bottom: 1rem; line-height: 1.6;">
+                        Hotel mewah di jantung kota Jakarta dengan fasilitas lengkap dan pelayanan terbaik untuk pengalaman menginap yang tak terlupakan.
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">WiFi</span>
+                        <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">AC</span>
+                        <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Pool</span>
+                        <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Restaurant</span>
+                    </div>
+                    <a href="deskripsi2.html" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3); color: #ffffff; text-decoration: none; display: inline-block; width: 100%; text-align: center;">
+                        Lihat Detail & Pesan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hotel Card 2 - Bali Beach Resort -->
             <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
                 <div style="height: 200px; background: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=250&fit=crop') center/cover; position: relative;">
                     <div style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 8px 15px; border-radius: 25px; font-weight: bold;">
@@ -119,13 +207,13 @@
                         <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Spa</span>
                         <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Bar</span>
                     </div>
-                    <a href="deskripsi.html" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3); color: #ffffff; text-decoration: none; display: inline-block; width: 100%; text-align: center;">
-                        Lihat Detail
+                    <a href="deskripsi2.html" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3); color: #ffffff; text-decoration: none; display: inline-block; width: 100%; text-align: center;">
+                        Lihat Detail & Pesan
                     </a>
                 </div>
             </div>
 
-            <!-- Hotel Card 2 - Bandung Mountain View -->
+            <!-- Hotel Card 3 - Bandung Mountain View -->
             <div style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 54, 93, 0.1); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 25px 50px rgba(26, 54, 93, 0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(26, 54, 93, 0.1)'">
                 <div style="height: 200px; background: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=250&fit=crop') center/cover; position: relative;">
                     <div style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #ffffff; padding: 8px 15px; border-radius: 25px; font-weight: bold;">
@@ -145,13 +233,65 @@
                         <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Garden</span>
                         <span style="background: #f7fafc; color: #1a365d; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">Cafe</span>
                     </div>
-                    <a href="deskripsi.html" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3); color: #ffffff; text-decoration: none; display: inline-block; width: 100%; text-align: center;">
-                        Lihat Detail
+                    <a href="deskripsi2.html" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3); color: #ffffff; text-decoration: none; display: inline-block; width: 100%; text-align: center;">
+                        Lihat Detail & Pesan
                     </a>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <form method="POST" action="update_profile.php">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Depan</label>
+                                    <input type="text" class="form-control" name="nama_depan" value="John" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Belakang</label>
+                                    <input type="text" class="form-control" name="nama_belakang" value="Doe" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="john.doe@example.com" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Password Baru (kosongkan jika tidak ingin mengubah)</label>
+                            <input type="password" class="form-control" name="password_baru">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Konfirmasi Password Baru</label>
+                            <input type="password" class="form-control" name="konfirmasi_password">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Features Section -->
     <section class="container my-5">
@@ -199,7 +339,7 @@
                 <div class="col-md-4">
                     <h5 style="color: #ffffff; margin-bottom: 1rem;">Kontak</h5>
                     <p style="color: #cbd5e0; margin-bottom: 0.5rem;">
-                        <i class="fas fa-envelope me-2"></i><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2abaca4ad82aaadb6a7aea4b7b6b7b0a7eca1adaf">[email&#160;protected]</a>
+                        <i class="fas fa-envelope me-2"></i><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e0e7efe6c9e1e6fdece5effcfdfcfbeca7eae6e4">[email&#160;protected]</a>
                     </p>
                     <p style="color: #cbd5e0; margin-bottom: 0.5rem;">
                         <i class="fas fa-phone me-2"></i>+62 821 2995 2530
@@ -247,6 +387,20 @@
             }
         }
         
+        /* Desktop - 1920px */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1800px;
+            }
+            h1 {
+                font-size: 3.5rem !important;
+            }
+            h2 {
+                font-size: 2.5rem !important;
+            }
+        }
+        
+        /* Tablet - 768px */
         @media (max-width: 768px) {
             body {
                 font-size: 14px;
@@ -257,8 +411,21 @@
             h2 {
                 font-size: 1.5rem !important;
             }
+            .navbar-brand {
+                font-size: 1.5rem !important;
+            }
+            [style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+            [style*="padding: 5rem 0"] {
+                padding: 3rem 0 !important;
+            }
+            [style*="padding: 2rem"] {
+                padding: 1rem !important;
+            }
         }
         
+        /* Mobile - 390px */
         @media (max-width: 390px) {
             body {
                 font-size: 13px;
@@ -269,6 +436,65 @@
             .container {
                 padding: 0 15px;
             }
+            [style*="padding: 1.5rem"] {
+                padding: 1rem !important;
+            }
+            [style*="font-size: 1.5rem"] {
+                font-size: 1.2rem !important;
+            }
+        }
+
+        /* Form Styles */
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+            background: #ffffff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.4);
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+        }
+
+        .btn-secondary {
+            background: #718096;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #2d3748;
+            transform: translateY(-2px);
         }
     </style>
 </body>

@@ -2,100 +2,260 @@
 require_once 'config.php';
 require_once 'functions.php';
 
-// Check if user is admin
+// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
-$format = isset($_GET['format']) ? $_GET['format'] : 'html';
-$period = isset($_GET['period']) ? $_GET['period'] : 'monthly';
+// Get parameters
+$period = $_GET['period'] ?? 'daily';
+$start_date = $_GET['start_date'] ?? '';
+$end_date = $_GET['end_date'] ?? '';
 
-// Get revenue data
-$revenue_data = getRevenueReport($period);
+// Auto-update booking status
+updateBookingStatusByDate();
 
-if ($format === 'pdf') {
-    // For PDF export (simplified version)
-    header('Content-Type: text/html');
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Laporan Pendapatan - HotelFuture</title>
-        <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1a365d; padding-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { background-color: #1a365d; color: white; }
-            .total { font-weight: bold; background-color: #f0f8ff; }
-            .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-        </style>
-        <script>
-            window.onload = function() {
-                window.print();
-            }
-        </script>
-    </head>
-    <body>
-        <div class="header">
-            <h1>🏨 HotelFuture</h1>
-            <h2>Laporan Pendapatan <?= ucfirst($period) ?></h2>
-            <p>Digenerate pada: <?= date('d/m/Y H:i:s') ?></p>
-        </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Periode</th>
-                    <th>Jumlah Transaksi</th>
-                    <th>Total Pendapatan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                $total_revenue = 0;
-                $total_transactions = 0;
-                foreach ($revenue_data as $data): 
-                    $total_revenue += $data['total_pendapatan'];
-                    $total_transactions += $data['jumlah_transaksi'];
-                ?>
-                    <tr>
-                        <td><?= $period === 'daily' ? formatDate($data['periode']) : date('F Y', strtotime($data['periode'] . '-01')) ?></td>
-                        <td><?= $data['jumlah_transaksi'] ?></td>
-                        <td><?= formatRupiah($data['total_pendapatan']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-                <tr class="total">
-                    <td><strong>TOTAL</strong></td>
-                    <td><strong><?= $total_transactions ?></strong></td>
-                    <td><strong><?= formatRupiah($total_revenue) ?></strong></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="footer">
-            <p>Laporan ini digenerate secara otomatis oleh sistem HotelFuture</p>
-            <p>&copy; 2025 HotelFuture. All rights reserved.</p>
-        </div>
-    </body>
-    </html>
-    <?php
+// Get filtered revenue data
+if (!empty($start_date) && !empty($end_date)) {
+    $result = getFilteredRevenueReport($period, $start_date, $end_date);
+    $revenue_data = $result['revenue_data'];
+    $total_revenue_all = $result['total_revenue'];
+    $total_transactions_all = $result['total_transactions'];
+    
+    // Set title based on period
+    if ($period === 'daily') {
+        $title = 'Laporan Pendapatan Harian (' . formatDate($start_date) . ' - ' . formatDate($end_date) . ')';
+    } elseif ($period === 'monthly') {
+        $start_month = date('F Y', strtotime($start_date . '-01'));
+        $end_month = date('F Y', strtotime($end_date . '-01'));
+        $title = 'Laporan Pendapatan Bulanan (' . $start_month . ' - ' . $end_month . ')';
+    } else {
+        $title = 'Laporan Pendapatan Tahunan (' . $start_date . ' - ' . $end_date . ')';
+    }
 } else {
-    // CSV Export
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="laporan_pendapatan_' . $period . '_' . date('Y-m-d') . '.csv"');
-    
-    $output = fopen('php://output', 'w');
-    
-    // CSV Headers
-    fputcsv($output, ['Periode', 'Jumlah Transaksi', 'Total Pendapatan']);
-    
-    // CSV Data
-    foreach ($revenue_data as $data) {
-        $periode = $period === 'daily' ? $data['periode'] : date('F Y', strtotime($data['periode'] . '-01'));
-        fputcsv($output, [$periode, $data['jumlah_transaksi'], $data['total_pendapatan']]);
+    // Fallback to default report
+    if ($period === 'daily') {
+        $revenue_data = getRevenueReport('daily');
+        $title = 'Laporan Pendapatan Harian (30 Hari Terakhir)';
+    } elseif ($period === 'monthly') {
+        $revenue_data = getRevenueReport('monthly');
+        $title = 'Laporan Pendapatan Bulanan (12 Bulan Terakhir)';
+    } else {
+        $stmt = $pdo->query("SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y') as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                            FROM pemesanan p 
+                            WHERE p.status IN ('berhasil', 'selesai') AND p.tanggal_pemesanan >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)
+                            GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y') 
+                            ORDER BY periode DESC");
+        $revenue_data = $stmt->fetchAll();
+        $title = 'Laporan Pendapatan Tahunan (5 Tahun Terakhir)';
     }
     
-    fclose($output);
+    // Calculate totals
+    $total_revenue_all = 0;
+    $total_transactions_all = 0;
+    foreach ($revenue_data as $revenue) {
+        $total_revenue_all += $revenue['total_pendapatan'];
+        $total_transactions_all += $revenue['jumlah_transaksi'];
+    }
 }
+
+// Set headers for PDF download
+header('Content-Type: text/html; charset=utf-8');
 ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $title ?> - HotelAurora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+        .summary h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .summary-item .label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .print-btn:hover {
+            background: #0056b3;
+        }
+        @media print {
+            .print-btn {
+                display: none;
+            }
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">
+        <i class="fas fa-print"></i> Print PDF
+    </button>
+
+    <div class="header">
+        <h1>HotelAurora</h1>
+        <h2><?= $title ?></h2>
+        <p>Digenerate pada: <?= date('d F Y, H:i:s') ?></p>
+    </div>
+
+    <div class="summary">
+        <h3>Ringkasan</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="value"><?= $total_transactions_all ?></div>
+                <div class="label">Total Transaksi</div>
+            </div>
+            <div class="summary-item">
+                <div class="value"><?= formatRupiah($total_revenue_all) ?></div>
+                <div class="label">Total Pendapatan</div>
+            </div>
+            <div class="summary-item">
+                <div class="value"><?= $total_transactions_all > 0 ? formatRupiah($total_revenue_all / $total_transactions_all) : 'Rp 0' ?></div>
+                <div class="label">Rata-rata per Transaksi</div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th><?= $period === 'daily' ? 'Tanggal' : ($period === 'monthly' ? 'Bulan' : 'Tahun') ?></th>
+                <th class="text-center">Jumlah Transaksi</th>
+                <th class="text-right">Total Pendapatan</th>
+                <th class="text-right">Rata-rata per Transaksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($revenue_data as $revenue): 
+                $avg_per_transaction = $revenue['jumlah_transaksi'] > 0 ? $revenue['total_pendapatan'] / $revenue['jumlah_transaksi'] : 0;
+            ?>
+                <tr>
+                    <td>
+                        <strong>
+                            <?php if ($period === 'daily'): ?>
+                                <?= formatDate($revenue['periode']) ?>
+                            <?php elseif ($period === 'monthly'): ?>
+                                <?= date('F Y', strtotime($revenue['periode'] . '-01')) ?>
+                            <?php else: ?>
+                                <?= $revenue['periode'] ?>
+                            <?php endif; ?>
+                        </strong>
+                    </td>
+                    <td class="text-center"><?= $revenue['jumlah_transaksi'] ?> transaksi</td>
+                    <td class="text-right"><strong><?= formatRupiah($revenue['total_pendapatan']) ?></strong></td>
+                    <td class="text-right"><?= formatRupiah($avg_per_transaction) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        <tfoot>
+            <tr style="background-color: #343a40; color: white; font-weight: bold;">
+                <td><strong>TOTAL KESELURUHAN</strong></td>
+                <td class="text-center"><strong><?= $total_transactions_all ?> transaksi</strong></td>
+                <td class="text-right"><strong><?= formatRupiah($total_revenue_all) ?></strong></td>
+                <td class="text-right"><strong><?= $total_transactions_all > 0 ? formatRupiah($total_revenue_all / $total_transactions_all) : formatRupiah(0) ?></strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="footer">
+        <p><strong>HotelAurora</strong> - Sistem Manajemen Hotel</p>
+        <p>Laporan ini digenerate secara otomatis oleh sistem pada <?= date('d F Y, H:i:s') ?></p>
+        <p>© <?= date('Y') ?> HotelAurora. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Auto print when page loads (optional)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

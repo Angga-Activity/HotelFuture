@@ -1,21 +1,17 @@
 <?php
 require_once 'config.php';
 
-
 function registerUser($nama_depan, $nama_belakang, $email, $password) {
     global $pdo;
     
-
     $stmt = $pdo->prepare("SELECT id_pengguna FROM pengguna WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
         return false; 
     }
     
-    
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-
     $stmt = $pdo->prepare("INSERT INTO pengguna (nama_depan, nama_belakang, email, password, hak_akses, tanggal_daftar) VALUES (?, ?, ?, ?, 'user', NOW())");
     return $stmt->execute([$nama_depan, $nama_belakang, $email, $hashed_password]);
 }
@@ -38,11 +34,10 @@ function loginUser($email, $password) {
     return false;
 }
 
-
 function getAllHotels($search = '', $location = '', $min_price = 0, $max_price = 999999999) {
     global $pdo;
     
-    $sql = "SELECT * FROM hotel WHERE nama_hotel LIKE ? AND lokasi LIKE ? AND harga_per_malam BETWEEN ? AND ? AND stok_kamar > 0 ORDER BY nama_hotel";
+    $sql = "SELECT * FROM hotel WHERE nama_hotel LIKE ? AND lokasi LIKE ? AND harga_per_malam BETWEEN ? AND ? ORDER BY nama_hotel";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search%", "%$location%", $min_price, $max_price]);
     return $stmt->fetchAll();
@@ -119,9 +114,21 @@ function processPayment($booking_id, $metode, $nomor_akun) {
     }
 }
 
+// Auto-update booking status based on checkout date
+function updateBookingStatusByDate() {
+    global $pdo;
+    
+    // Update bookings to 'selesai' if checkout date has passed
+    $stmt = $pdo->prepare("UPDATE pemesanan SET status = 'selesai' WHERE status = 'berhasil' AND tanggal_checkout < CURDATE()");
+    return $stmt->execute();
+}
+
 // Get user bookings
 function getUserBookings($user_id, $status = '') {
     global $pdo;
+    
+    // Auto-update booking status first
+    updateBookingStatusByDate();
     
     $sql = "SELECT p.*, h.nama_hotel, h.lokasi, pay.metode, pay.nomor_akun 
             FROM pemesanan p 
@@ -143,7 +150,6 @@ function getUserBookings($user_id, $status = '') {
     return $stmt->fetchAll();
 }
 
-
 function getAllUsers() {
     global $pdo;
     
@@ -153,6 +159,9 @@ function getAllUsers() {
 
 function getAllBookings() {
     global $pdo;
+    
+    // Auto-update booking status first
+    updateBookingStatusByDate();
     
     $stmt = $pdo->query("SELECT p.*, h.nama_hotel, u.nama_depan, u.nama_belakang, u.email 
                         FROM pemesanan p 
@@ -165,22 +174,111 @@ function getAllBookings() {
 function getRevenueReport($period = 'monthly') {
     global $pdo;
     
+    // Auto-update booking status first
+    updateBookingStatusByDate();
+    
     if ($period === 'daily') {
         $sql = "SELECT DATE(p.tanggal_pemesanan) as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
                 FROM pemesanan p 
-                WHERE p.status = 'berhasil' AND DATE(p.tanggal_pemesanan) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                WHERE p.status IN ('berhasil', 'selesai') AND DATE(p.tanggal_pemesanan) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
                 GROUP BY DATE(p.tanggal_pemesanan) 
+                ORDER BY periode DESC";
+    } elseif ($period === 'weekly') {
+        $sql = "SELECT 
+                    CONCAT(YEAR(p.tanggal_pemesanan), '-W', LPAD(WEEK(p.tanggal_pemesanan, 1), 2, '0')) as periode,
+                    CONCAT('Minggu ', WEEK(p.tanggal_pemesanan, 1), ' - ', YEAR(p.tanggal_pemesanan)) as periode_display,
+                    SUM(p.total_harga) as total_pendapatan, 
+                    COUNT(*) as jumlah_transaksi,
+                    DATE(DATE_SUB(p.tanggal_pemesanan, INTERVAL WEEKDAY(p.tanggal_pemesanan) DAY)) as week_start
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') AND p.tanggal_pemesanan >= DATE_SUB(CURDATE(), INTERVAL 12 WEEK)
+                GROUP BY YEAR(p.tanggal_pemesanan), WEEK(p.tanggal_pemesanan, 1)
                 ORDER BY periode DESC";
     } else {
         $sql = "SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
                 FROM pemesanan p 
-                WHERE p.status = 'berhasil' AND p.tanggal_pemesanan >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+                WHERE p.status IN ('berhasil', 'selesai') AND p.tanggal_pemesanan >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
                 GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') 
                 ORDER BY periode DESC";
     }
     
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll();
+}
+
+// New function for filtered revenue report
+function getFilteredRevenueReport($period, $start_date, $end_date) {
+    global $pdo;
+    
+    // Auto-update booking status first
+    updateBookingStatusByDate();
+    
+    $params = [];
+    
+    if ($period === 'daily') {
+        // Daily filter: from date to date
+        $sql = "SELECT DATE(p.tanggal_pemesanan) as periode, 
+                       SUM(p.total_harga) as total_pendapatan, 
+                       COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') 
+                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
+                GROUP BY DATE(p.tanggal_pemesanan) 
+                ORDER BY periode ASC";
+        $params = [$start_date, $end_date];
+        
+    } elseif ($period === 'monthly') {
+        // Monthly filter: from month to month
+        $start_month = $start_date . '-01';
+        $end_month = $end_date . '-31';
+        
+        $sql = "SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') as periode, 
+                       SUM(p.total_harga) as total_pendapatan, 
+                       COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') 
+                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
+                GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') 
+                ORDER BY periode ASC";
+        $params = [$start_month, $end_month];
+        
+    } elseif ($period === 'yearly') {
+        // Yearly filter: from year to year
+        $start_year = $start_date . '-01-01';
+        $end_year = $end_date . '-12-31';
+        
+        $sql = "SELECT YEAR(p.tanggal_pemesanan) as periode, 
+                       SUM(p.total_harga) as total_pendapatan, 
+                       COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') 
+                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
+                GROUP BY YEAR(p.tanggal_pemesanan) 
+                ORDER BY periode ASC";
+        $params = [$start_year, $end_year];
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $revenue_data = $stmt->fetchAll();
+    
+    // Calculate totals
+    $total_revenue = 0;
+    $total_transactions = 0;
+    
+    foreach ($revenue_data as $row) {
+        $total_revenue += $row['total_pendapatan'];
+        $total_transactions += $row['jumlah_transaksi'];
+    }
+    
+    $average_revenue = $total_transactions > 0 ? $total_revenue / $total_transactions : 0;
+    
+    return [
+        'revenue_data' => $revenue_data,
+        'total_revenue' => $total_revenue,
+        'total_transactions' => $total_transactions,
+        'average_revenue' => $average_revenue
+    ];
 }
 
 // Utility Functions
@@ -199,5 +297,37 @@ function validateDate($date) {
 
 function sanitizeInput($input) {
     return htmlspecialchars(strip_tags(trim($input)));
+}
+
+// Handle file upload for hotel photos
+function handleHotelPhotoUpload($file) {
+    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
+        return false;
+    }
+    
+    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!in_array($file['type'], $allowed_types)) {
+        return false;
+    }
+    
+    $max_size = 5 * 1024 * 1024; // 5MB
+    if ($file['size'] > $max_size) {
+        return false;
+    }
+    
+    $upload_dir = 'uploads/hotels/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    
+    $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $new_filename = 'hotel_' . time() . '_' . uniqid() . '.' . $file_extension;
+    $upload_path = $upload_dir . $new_filename;
+    
+    if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+        return $upload_path;
+    }
+    
+    return false;
 }
 ?>

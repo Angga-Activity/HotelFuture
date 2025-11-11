@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HotelAurora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        /* Enhanced modern design styles */
+        :root {
+            --primary-blue: #1a365d !important;
+            --secondary-blue: #2c5282 !important;
+            --accent-blue: #3182ce !important;
+            --light-gray: #f7fafc !important;
+            --medium-gray: #718096 !important;
+            --dark-gray: #2d3748 !important;
+            --white: #ffffff !important;
+            --success: #38a169 !important;
+            --warning: #d69e2e !important;
+            --danger: #e53e3e !important;
+            --shadow: 0 10px 25px rgba(26, 54, 93, 0.1) !important;
+            --gradient: linear-gradient(135deg, #1a365d 0%, #2c5282 100%) !important;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%) !important;
+            color: #2d3748 !important;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header with glassmorphism effect */
+        .header {
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.95) 0%, rgba(44, 82, 130, 0.95) 100%) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(26, 54, 93, 0.2);
+        }
+
+        .navbar-brand {
+            background: linear-gradient(45deg, #ffffff, #cbd5e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-shadow: none;
+        }
+
+        /* Dashboard header with animated gradient */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            color: #ffffff;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Enhanced stat cards with hover effects */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: -3rem 0 3rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(26, 54, 93, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a365d, #3182ce, #38a169);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(26, 54, 93, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1a365d 0%, #3182ce 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced cards with modern styling */
+        .card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(26, 54, 93, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(26, 54, 93, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            color: #ffffff;
+            border: none;
+            padding: 2rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
+
+        /* Enhanced buttons with modern styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(26, 54, 93, 0.4);
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #1a365d;
+            color: #1a365d;
+            background: transparent;
+            border-radius: 16px;
+            padding: 10px 22px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: #1a365d;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
+        }
+
+        /* Enhanced table styling */
+        .table {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(26, 54, 93, 0.1);
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            color: #ffffff;
+            border: none;
+            padding: 1.5rem 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .table tbody td {
+            padding: 1.5rem 1rem;
+            border-color: rgba(226, 232, 240, 0.8);
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.02) 0%, rgba(49, 130, 206, 0.02) 100%);
+            transform: scale(1.01);
+        }
+
+        /* Enhanced badges */
+        .badge {
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Date picker enhancements */
+        .date-picker-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(26, 54, 93, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .date-input-group {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.05);
+        }
+
+        .date-input-group:hover {
+            border-color: #3182ce;
+            box-shadow: 0 8px 25px rgba(49, 130, 206, 0.15);
+        }
+
+        .date-input {
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Revenue cards with gradient backgrounds */
+        .revenue-card {
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .revenue-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .revenue-card:hover::before {
+            opacity: 1;
+        }
+
+        .revenue-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .revenue-card h4 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Responsive design for specified screen sizes */
+        @media (min-width: 1920px) {
+            .container {
+                max-width: 1800px;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 3rem;
+            }
+            
+            .stat-number {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 1rem;
+            }
+            
+            .dashboard-header {
+                padding: 2rem 0;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: -2rem 0 2rem 0;
+            }
+            
+            .stat-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .card-header {
+                padding: 1.5rem;
+                font-size: 1.1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .container {
+                max-width: 100%;
+                padding: 0 0.75rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+            
+            .dashboard-header {
+                padding: 1.5rem 0;
+            }
+            
+            .stat-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .stat-label {
+                font-size: 0.9rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .btn {
+                font-size: 0.9rem;
+                padding: 10px 16px;
+            }
+            
+            .table thead th,
+            .table tbody td {
+                padding: 1rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Loading animations */
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: #3182ce;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Enhanced alert styling */
+        .alert {
+            border: none;
+            border-radius: 16px;
+            padding: 1.5rem;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(214, 158, 46, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+            border-left: 4px solid #d69e2e;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #718096, #1a365d);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+        }
+
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #718096 #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-hotel me-2"></i> HotelAurora
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-shield me-1"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#hotels"><i class="fas fa-hotel me-2"></i>Kelola Hotel</a></li>
+                                <li><a class="dropdown-item" href="#users"><i class="fas fa-users me-2"></i>Kelola User</a></li>
+                                <li><a class="dropdown-item" href="#bookings"><i class="fas fa-calendar-check me-2"></i>Kelola Booking</a></li>
+                                <li><a class="dropdown-item" href="#revenue"><i class="fas fa-chart-line me-2"></i>Laporan Pendapatan</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="logout.html">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-3">
+                        Dashboard Admin
+                    </h1>
+                    <p class="lead mb-0 opacity-90">
+                        Kelola hotel, pemesanan, dan pengguna dengan mudah
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="admin-avatar">
+                        <i class="fas fa-user-shield display-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="py-4">
+        <div class="container">
+            <div class="alert alert-success alert-dismissible fade show" style="display: none;" id="successAlert">
+                <i class="fas fa-check-circle me-2"></i> <span id="alertMessage"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalUsers">2</span>
+                    <div class="stat-label">Total User</div>
+                </div>
+                
+                <div class="stat-card">
+                    <span class="stat-number" id="totalHotels">6</span>
+                    <div class="stat-label">Total Hotel</div>
+                </div>
+                
+                <div class="stat-card">
+                    <span class="stat-number" id="totalBookings">15</span>
+                    <div class="stat-label">Total Booking</div>
+                </div>
+                
+                <div class="stat-card">
+                    <span class="stat-number" id="totalRevenue">Rp 98.337.499</span>
+                    <div class="stat-label">Total Pendapatan</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <!-- Low Stock Alert -->
+        <div class="alert alert-warning mb-4">
+            <h5><i class="fas fa-exclamation-triangle me-2"></i> Peringatan Stok Kamar</h5>
+            <p class="mb-3">Hotel berikut memiliki stok kamar yang hampir habis:</p>
+            <ul class="mb-0">
+                <li class="mb-2">
+                    <strong>Hotel Santika Jakarta</strong> 
+                    - Sisa 2 kamar
+                    <button class="btn btn-sm btn-warning ms-2" onclick="updateStock(1, 'Hotel Santika Jakarta', 2)">
+                        <i class="fas fa-boxes me-1"></i>Update Stok
+                    </button>
+                </li>
+                <li>
+                    <strong>Grand Hyatt Bali</strong> 
+                    - Sisa 1 kamar
+                    <button class="btn btn-sm btn-warning ms-2" onclick="updateStock(2, 'Grand Hyatt Bali', 1)">
+                        <i class="fas fa-boxes me-1"></i>Update Stok
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Revenue Report -->
+        <div class="card mb-5" id="revenue">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i> Laporan Pendapatan</h4>
+                <div class="btn-group mt-2 mt-md-0">
+                    <button class="btn btn-primary" onclick="showRevenueReport('daily')" id="btnDaily">
+                        <i class="fas fa-calendar-day me-1"></i>Harian
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showRevenueReport('monthly')" id="btnMonthly">
+                        <i class="fas fa-calendar-alt me-1"></i>Bulanan
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showRevenueReport('yearly')" id="btnYearly">
+                        <i class="fas fa-calendar me-1"></i>Tahunan
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Daily Revenue -->
+                <div id="dailyRevenue">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h5 class="mb-0">Laporan Pendapatan Harian</h5>
+                        <button class="btn btn-success mt-2 mt-md-0" onclick="exportRevenue('daily')">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                    </div>
+                    
+                    <div class="date-picker-container">
+                        <div class="date-picker-header">
+                            <div class="date-input-group">
+                                <i class="fas fa-calendar-alt text-primary"></i>
+                                <input type="date" class="date-input" id="selectedDate" placeholder="Pilih tanggal...">
+                            </div>
+                            <button class="btn btn-outline-danger" onclick="clearSelectedDate()">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </button>
+                            <div class="ms-auto d-none d-md-block">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i> Pilih tanggal untuk melihat detail pendapatan dan booking
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Revenue Summary (hidden by default) -->
+                        <div id="revenueSummary" style="display: none;">
+                            <div class="revenue-summary">
+                                <div class="revenue-card success" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                    <h4 id="totalPendapatan">Rp 0</h4>
+                                    <p class="mb-0 text-white">Total Pendapatan</p>
+                                </div>
+                                <div class="revenue-card info" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <h4 id="jumlahTransaksi">0</h4>
+                                    <p class="mb-0 text-white">Total Transaksi</p>
+                                </div>
+                                <div class="revenue-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <h4 id="rataRata">Rp 0</h4>
+                                    <p class="mb-0 text-white">Rata-rata per Transaksi</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Details Container -->
+                        <div id="bookingDetailsContainer">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-calendar-plus fa-3x mb-3 text-primary opacity-50"></i>
+                                <h5>Pilih Tanggal</h5>
+                                <p>Pilih tanggal di atas untuk melihat detail pendapatan dan booking</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Klik pada tanggal untuk melihat detail booking pada hari tersebut
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar me-1"></i>Tanggal</th>
+                                    <th><i class="fas fa-chart-bar me-1"></i>Jumlah Transaksi</th>
+                                    <th><i class="fas fa-money-bill-wave me-1"></i>Total Pendapatan</th>
+                                    <th><i class="fas fa-calculator me-1"></i>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong class="date-clickable" onclick="showDailyBookings('2025-01-20')">20 Januari 2025</strong>
+                                    </td>
+                                    <td><span class="badge bg-info">5 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 2.500.000</strong></td>
+                                    <td>Rp 500.000</td>
+                                </tr>
+                                <tr id="bookings-2025-01-20" style="display: none;">
+                                    <td colspan="4">
+                                        <div id="booking-details-2025-01-20">
+                                            <!-- Booking details will be loaded here -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong class="date-clickable" onclick="showDailyBookings('2025-01-19')">19 Januari 2025</strong>
+                                    </td>
+                                    <td><span class="badge bg-info">3 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 1.800.000</strong></td>
+                                    <td>Rp 600.000</td>
+                                </tr>
+                                <tr id="bookings-2025-01-19" style="display: none;">
+                                    <td colspan="4">
+                                        <div id="booking-details-2025-01-19">
+                                            <!-- Booking details will be loaded here -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong class="date-clickable" onclick="showDailyBookings('2025-01-18')">18 Januari 2025</strong>
+                                    </td>
+                                    <td><span class="badge bg-info">7 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 3.200.000</strong></td>
+                                    <td>Rp 457.143</td>
+                                </tr>
+                                <tr id="bookings-2025-01-18" style="display: none;">
+                                    <td colspan="4">
+                                        <div id="booking-details-2025-01-18">
+                                            <!-- Booking details will be loaded here -->
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue -->
+                <div id="monthlyRevenue" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h5 class="mb-0">Laporan Pendapatan Bulanan (12 Bulan Terakhir)</h5>
+                        <button class="btn btn-success mt-2 mt-md-0" onclick="exportRevenue('monthly')">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="revenueTable">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar me-1"></i>Bulan</th>
+                                    <th><i class="fas fa-chart-bar me-1"></i>Jumlah Transaksi</th>
+                                    <th><i class="fas fa-money-bill-wave me-1"></i>Total Pendapatan</th>
+                                    <th><i class="fas fa-calculator me-1"></i>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Januari 2025</strong></td>
+                                    <td><span class="badge bg-info">45 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 15.750.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Desember 2024</strong></td>
+                                    <td><span class="badge bg-info">52 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 18.200.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>November 2024</strong></td>
+                                    <td><span class="badge bg-info">38 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 13.300.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <th><strong>TOTAL KESELURUHAN</strong></th>
+                                    <th><strong>135 transaksi</strong></th>
+                                    <th><strong>Rp 47.250.000</strong></th>
+                                    <th><strong>Rp 350.000</strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Yearly Revenue -->
+                <div id="yearlyRevenue" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h5 class="mb-0">Laporan Pendapatan Tahunan (5 Tahun Terakhir)</h5>
+                        <button class="btn btn-success mt-2 mt-md-0" onclick="exportRevenue('yearly')">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar me-1"></i>Tahun</th>
+                                    <th><i class="fas fa-chart-bar me-1"></i>Jumlah Transaksi</th>
+                                    <th><i class="fas fa-money-bill-wave me-1"></i>Total Pendapatan</th>
+                                    <th><i class="fas fa-calculator me-1"></i>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>2024</strong></td>
+                                    <td><span class="badge bg-info">485 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 169.750.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2023</strong></td>
+                                    <td><span class="badge bg-info">420 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 147.000.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2022</strong></td>
+                                    <td><span class="badge bg-info">380 transaksi</span></td>
+                                    <td><strong class="text-success">Rp 133.000.000</strong></td>
+                                    <td>Rp 350.000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <th><strong>TOTAL KESELURUHAN</strong></th>
+                                    <th><strong>1285 transaksi</strong></th>
+                                    <th><strong>Rp 449.750.000</strong></th>
+                                    <th><strong>Rp 350.000</strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotel Management -->
+        <div class="card mb-5" id="hotels">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <h4 class="mb-0"><i class="fas fa-hotel me-2"></i> Kelola Hotel</h4>
+                <button class="btn btn-primary mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#addHotelModal">
+                    <i class="fas fa-plus me-1"></i> Tambah Hotel
+                </button>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hotel me-1"></i>Hotel</th>
+                                <th><i class="fas fa-map-marker-alt me-1"></i>Lokasi</th>
+                                <th><i class="fas fa-money-bill-wave me-1"></i>Harga/Malam</th>
+                                <th><i class="fas fa-bed me-1"></i>Stok Kamar</th>
+                                <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                                <th><i class="fas fa-cogs me-1"></i>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Hotel Santika Jakarta</strong></td>
+                                <td>Jakarta Pusat</td>
+                                <td>Rp 750.000</td>
+                                <td><span class="badge bg-warning">2 kamar</span></td>
+                                <td><span class="badge bg-success">Tersedia</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-info" onclick="updateStock(1, 'Hotel Santika Jakarta', 2)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editHotel({id_hotel: 1, nama_hotel: 'Hotel Santika Jakarta', lokasi: 'Jakarta Pusat', harga_per_malam: 750000, stok_kamar: 2, deskripsi: 'Hotel mewah di pusat kota Jakarta'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteHotel(1, 'Hotel Santika Jakarta')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Grand Hyatt Bali</strong></td>
+                                <td>Nusa Dua, Bali</td>
+                                <td>Rp 1.200.000</td>
+                                <td><span class="badge bg-warning">1 kamar</span></td>
+                                <td><span class="badge bg-success">Tersedia</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-info" onclick="updateStock(2, 'Grand Hyatt Bali', 1)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editHotel({id_hotel: 2, nama_hotel: 'Grand Hyatt Bali', lokasi: 'Nusa Dua, Bali', harga_per_malam: 1200000, stok_kamar: 1, deskripsi: 'Resort mewah dengan pemandangan pantai'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteHotel(2, 'Grand Hyatt Bali')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sheraton Surabaya</strong></td>
+                                <td>Surabaya</td>
+                                <td>Rp 650.000</td>
+                                <td><span class="badge bg-success">15 kamar</span></td>
+                                <td><span class="badge bg-success">Tersedia</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-info" onclick="updateStock(3, 'Sheraton Surabaya', 15)">
+                                            <i class="fas fa-boxes"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editHotel({id_hotel: 3, nama_hotel: 'Sheraton Surabaya', lokasi: 'Surabaya', harga_per_malam: 650000, stok_kamar: 15, deskripsi: 'Hotel bisnis dengan fasilitas lengkap'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteHotel(3, 'Sheraton Surabaya')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="card mb-5" id="users">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <h4 class="mb-0"><i class="fas fa-users me-2"></i> Kelola User</h4>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge bg-info fs-6">Total: 25 users</span>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                <th><i class="fas fa-user me-1"></i>Nama Lengkap</th>
+                                <th><i class="fas fa-envelope me-1"></i>Email</th>
+                                <th><i class="fas fa-shield-alt me-1"></i>Hak Akses</th>
+                                <th><i class="fas fa-calendar me-1"></i>Tanggal Daftar</th>
+                                <th><i class="fas fa-cogs me-1"></i>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>John Doe</strong></td>
+                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="73191c1b1d5d171c1633161e121a1f5d101c1e">[email&#160;protected]</a></td>
+                                <td><span class="badge bg-danger"><i class="fas fa-user-shield me-1"></i> Admin</span></td>
+                                <td>15 Januari 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-warning" onclick="editUser({id_pengguna: 1, nama_depan: 'John', nama_belakang: 'Doe', email: 'john.doe@email.com', hak_akses: 'admin'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <i class="fas fa-shield-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Jane Smith</strong></td>
+                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c161d1219520f111508143c19111d1510521f1311">[email&#160;protected]</a></td>
+                                <td><span class="badge bg-primary"><i class="fas fa-user me-1"></i> User</span></td>
+                                <td>10 Januari 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-warning" onclick="editUser({id_pengguna: 2, nama_depan: 'Jane', nama_belakang: 'Smith', email: 'jane.smith@email.com', hak_akses: 'user'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser(2, 'Jane Smith')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>Michael Johnson</strong></td>
+                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="701d19131811151c5e1a1f181e031f1e30151d11191c5e131f1d">[email&#160;protected]</a></td>
+                                <td><span class="badge bg-primary"><i class="fas fa-user me-1"></i> User</span></td>
+                                <td>8 Januari 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-warning" onclick="editUser({id_pengguna: 3, nama_depan: 'Michael', nama_belakang: 'Johnson', email: 'michael.johnson@email.com', hak_akses: 'user'})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser(3, 'Michael Johnson')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="card mb-5" id="bookings">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-calendar-check me-2"></i> Pemesanan Terbaru</h4>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-barcode me-1"></i>Kode Booking</th>
+                                <th><i class="fas fa-user me-1"></i>Tamu</th>
+                                <th><i class="fas fa-hotel me-1"></i>Hotel</th>
+                                <th><i class="fas fa-calendar-check me-1"></i>Check-in</th>
+                                <th><i class="fas fa-money-bill-wave me-1"></i>Total</th>
+                                <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>HTL20250120001</strong></td>
+                                <td>Ahmad Rizki</td>
+                                <td>Hotel Santika Jakarta</td>
+                                <td>22 Januari 2025</td>
+                                <td>Rp 750.000</td>
+                                <td><span class="badge bg-success">Berhasil</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>HTL20250120002</strong></td>
+                                <td>Sari Dewi</td>
+                                <td>Grand Hyatt Bali</td>
+                                <td>25 Januari 2025</td>
+                                <td>Rp 1.200.000</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>HTL20250119001</strong></td>
+                                <td>Budi Santoso</td>
+                                <td>Sheraton Surabaya</td>
+                                <td>21 Januari 2025</td>
+                                <td>Rp 650.000</td>
+                                <td><span class="badge bg-info">Selesai</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Modals (Add Hotel, Edit Hotel, Update Stock, Edit User, Delete Confirmation) -->
+    <!-- Add Hotel Modal -->
+    <div class="modal fade" id="addHotelModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Tambah Hotel Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <form id="addHotelForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Hotel *</label>
+                                    <input type="text" class="form-control" name="nama_hotel" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Lokasi *</label>
+                                    <input type="text" class="form-control" name="lokasi" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Harga per Malam *</label>
+                                    <input type="number" class="form-control" name="harga_per_malam" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Stok Kamar *</label>
+                                    <input type="number" class="form-control" name="stok_kamar" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Foto Hotel</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Upload File</label>
+                                    <input type="file" class="form-control" name="foto_upload" accept="image/*">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Atau URL Foto</label>
+                                    <input type="url" class="form-control" name="foto_url" placeholder="https://example.com/hotel-image.jpg">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Deskripsi *</label>
+                            <textarea class="form-control" name="deskripsi" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Tambah Hotel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Hotel Modal -->
+    <div class="modal fade" id="editHotelModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Hotel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <form id="editHotelForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="hotel_id" id="editHotelId">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Hotel *</label>
+                                    <input type="text" class="form-control" name="nama_hotel" id="editNamaHotel" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Lokasi *</label>
+                                    <input type="text" class="form-control" name="lokasi" id="editLokasi" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Harga per Malam *</label>
+                                    <input type="number" class="form-control" name="harga_per_malam" id="editHarga" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Stok Kamar *</label>
+                                    <input type="number" class="form-control" name="stok_kamar" id="editStok" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Foto Hotel</label>
+                            <div class="mb-2">
+                                <small class="text-muted">Foto saat ini: <span id="currentPhotoText"></span></small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Upload File Baru</label>
+                                    <input type="file" class="form-control" name="foto_upload" accept="image/*">
+                                    <small class="text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Atau Ganti dengan URL</label>
+                                    <input type="url" class="form-control" name="foto_url" id="editFoto" placeholder="https://example.com/hotel-image.jpg">
+                                    <small class="text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Deskripsi *</label>
+                            <textarea class="form-control" name="deskripsi" id="editDeskripsi" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Update Hotel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Stock Modal -->
+    <div class="modal fade" id="updateStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-boxes me-2"></i>Update Stok Kamar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <form id="updateStockForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="hotel_id" id="stockHotelId">
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Nama Hotel</label>
+                            <input type="text" class="form-control" id="stockHotelName" readonly>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Stok Kamar Saat Ini</label>
+                            <input type="number" class="form-control" id="currentStock" readonly>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Stok Kamar Baru *</label>
+                            <input type="number" class="form-control" name="stok_kamar" id="newStock" required min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-info">Update Stok</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <form id="editUserForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="user_id" id="editUserId">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Depan *</label>
+                                    <input type="text" class="form-control" name="nama_depan" id="editNamaDepan" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nama Belakang *</label>
+                                    <input type="text" class="form-control" name="nama_belakang" id="editNamaBelakang" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" id="editEmail" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Hak Akses *</label>
+                            <select class="form-select" name="hak_akses" id="editHakAkses" required>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Password Baru (kosongkan jika tidak ingin mengubah)</label>
+                            <input type="password" class="form-control" name="password_baru" id="editPassword">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Update User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p id="deleteMessage">Apakah Anda yakin ingin menghapus item ini?</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" id="confirmDelete" class="btn btn-danger">Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 HotelAurora. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        // Enhanced JavaScript with modern features
+        
+        // Show revenue report function
+        function showRevenueReport(period) {
+            // Hide all reports with smooth transition
+            const reports = ['dailyRevenue', 'monthlyRevenue', 'yearlyRevenue'];
+            reports.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+            
+            // Remove active class from all buttons
+            const buttons = ['btnDaily', 'btnMonthly', 'btnYearly'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                }
+            });
+            
+            // Show selected report and activate button
+            const reportMap = {
+                'daily': 'dailyRevenue',
+                'monthly': 'monthlyRevenue', 
+                'yearly': 'yearlyRevenue'
+            };
+            
+            const buttonMap = {
+                'daily': 'btnDaily',
+                'monthly': 'btnMonthly',
+                'yearly': 'btnYearly'
+            };
+            
+            if (reportMap[period]) {
+                document.getElementById(reportMap[period]).style.display = 'block';
+            }
+            
+            if (buttonMap[period]) {
+                const activeBtn = document.getElementById(buttonMap[period]);
+                activeBtn.classList.remove('btn-outline-primary');
+                activeBtn.classList.add('btn-primary');
+            }
+        }
+        
+        // Enhanced date picker functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('selectedDate');
+            const revenueSummary = document.getElementById('revenueSummary');
+            const bookingContainer = document.getElementById('bookingDetailsContainer');
+            
+            if (dateInput) {
+                dateInput.addEventListener('change', function() {
+                    const selectedDate = this.value;
+                    if (selectedDate) {
+                        loadDailyData(selectedDate);
+                    } else {
+                        clearData();
+                    }
+                });
+            }
+        });
+        
+        function loadDailyData(date) {
+            const container = document.getElementById('bookingDetailsContainer');
+            const revenueSummary = document.getElementById('revenueSummary');
+            
+            // Show loading with enhanced animation
+            container.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                    <h5>Memuat data untuk tanggal ${formatDateIndonesian(date)}...</h5>
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             style="width: 100%; background: linear-gradient(90deg, #1a365d, #3182ce);"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Simulate loading with enhanced sample data
+            setTimeout(() => {
+                const sampleBookings = [
+                    {
+                        kode_booking: 'HTL20250120001',
+                        nama_depan: 'Ahmad',
+                        nama_belakang: 'Rizki',
+                        nama_hotel: 'Hotel Santika Jakarta',
+                        tanggal_checkin: '2025-01-22',
+                        tanggal_checkout: '2025-01-23',
+                        jumlah_kamar: 1,
+                        jumlah_orang: 2,
+                        total_harga: 750000,
+                        status: 'berhasil'
+                    },
+                    {
+                        kode_booking: 'HTL20250120002',
+                        nama_depan: 'Sari',
+                        nama_belakang: 'Dewi',
+                        nama_hotel: 'Grand Hyatt Bali',
+                        tanggal_checkin: '2025-01-25',
+                        tanggal_checkout: '2025-01-27',
+                        jumlah_kamar: 1,
+                        jumlah_orang: 2,
+                        total_harga: 2400000,
+                        status: 'berhasil'
+                    }
+                ];
+                
+                const revenue = {
+                    total_pendapatan: 3150000,
+                    jumlah_transaksi: 2
+                };
+                
+                // Show revenue summary with animation
+                revenueSummary.style.display = 'block';
+                revenueSummary.style.animation = 'slideDown 0.5s ease';
+                
+                document.getElementById('totalPendapatan').textContent = formatRupiah(revenue.total_pendapatan || 0);
+                document.getElementById('jumlahTransaksi').textContent = revenue.jumlah_transaksi || 0;
+                
+                const avgPerTransaction = revenue.jumlah_transaksi > 0 ? 
+                    (revenue.total_pendapatan / revenue.jumlah_transaksi) : 0;
+                document.getElementById('rataRata').textContent = formatRupiah(avgPerTransaction);
+                
+                // Show booking details
+                if (sampleBookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-bookings">
+                            <i class="fas fa-calendar-times fa-3x mb-3 text-warning"></i>
+                            <h5>Tidak ada pesanan pada tanggal ${formatDateIndonesian(date)}</h5>
+                            <p class="mb-0">Belum ada pemesanan hotel yang masuk pada hari ini.</p>
+                        </div>
+                    `;
+                } else {
+                    let bookingHtml = `
+                        <div class="booking-details">
+                            <h5><i class="fas fa-calendar-day me-2"></i> Detail Booking Tanggal ${formatDateIndonesian(date)}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Kode Booking</th>
+                                            <th>Tamu</th>
+                                            <th>Hotel</th>
+                                            <th>Check-in</th>
+                                            <th>Check-out</th>
+                                            <th>Kamar</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    let totalRevenue = 0;
+                    sampleBookings.forEach(booking => {
+                        const statusClass = booking.status === 'berhasil' ? 'success' : 
+                                          (booking.status === 'selesai' ? 'info' :
+                                          (booking.status === 'pending' ? 'warning' : 'danger'));
+                        
+                        if (booking.status === 'berhasil' || booking.status === 'selesai') {
+                            totalRevenue += parseInt(booking.total_harga);
+                        }
+                        
+                        bookingHtml += `
+                            <tr>
+                                <td><strong>${booking.kode_booking}</strong></td>
+                                <td>${booking.nama_depan} ${booking.nama_belakang}</td>
+                                <td>${booking.nama_hotel}</td>
+                                <td>${formatDateIndonesian(booking.tanggal_checkin)}</td>
+                                <td>${formatDateIndonesian(booking.tanggal_checkout)}</td>
+                                <td>${booking.jumlah_kamar} kamar, ${booking.jumlah_orang} orang</td>
+                                <td><strong>${formatRupiah(booking.total_harga)}</strong></td>
+                                <td><span class="badge bg-${statusClass}">${booking.status}</span></td>
+                            </tr>
+                        `;
+                    });
+                    
+                    bookingHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3 p-3 bg-light rounded">
+                                <div class="row text-center">
+                                    <div class="col-md-4">
+                                        <h6 class="text-primary">Total Booking</h6>
+                                        <h4 class="fw-bold">${sampleBookings.length}</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-success">Total Pendapatan</h6>
+                                        <h4 class="fw-bold">${formatRupiah(totalRevenue)}</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-info">Rata-rata</h6>
+                                        <h4 class="fw-bold">${sampleBookings.length > 0 ? formatRupiah(totalRevenue / sampleBookings.length) : 'Rp 0'}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.innerHTML = bookingHtml;
+                }
+            }, 1000);
+        }
+        
+        function clearSelectedDate() {
+            document.getElementById('selectedDate').value = '';
+            clearData();
+        }
+        
+        function clearData() {
+            document.getElementById('revenueSummary').style.display = 'none';
+            document.getElementById('bookingDetailsContainer').innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-calendar-plus fa-3x mb-3 text-primary opacity-50"></i>
+                    <h5>Pilih Tanggal</h5>
+                    <p>Pilih tanggal di atas untuk melihat detail pendapatan dan booking</p>
+                </div>
+            `;
+        }
+        
+        // Enhanced daily bookings function
+        function showDailyBookings(date) {
+            const bookingRow = document.getElementById('bookings-' + date);
+            const detailsDiv = document.getElementById('booking-details-' + date);
+            
+            if (bookingRow.style.display === 'none') {
+                detailsDiv.innerHTML = '<div class="text-center py-3"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data booking...</div>';
+                bookingRow.style.display = 'table-row';
+                
+                setTimeout(() => {
+                    const sampleBookings = [
+                        {
+                            kode_booking: 'HTL' + date.replace(/-/g, '') + '001',
+                            nama_depan: 'Ahmad',
+                            nama_belakang: 'Rizki',
+                            nama_hotel: 'Hotel Santika Jakarta',
+                            tanggal_checkin: date,
+                            tanggal_checkout: '2025-01-23',
+                            jumlah_kamar: 1,
+                            jumlah_orang: 2,
+                            total_harga: 750000,
+                            status: 'berhasil'
+                        }
+                    ];
+                    
+                    if (sampleBookings.length === 0) {
+                        detailsDiv.innerHTML = `
+                            <div class="no-bookings">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tidak ada yang pesan hotel pada tanggal ${formatDate(date)}</strong>
+                                <p class="mb-0">Belum ada pemesanan hotel yang masuk pada hari ini.</p>
+                            </div>
+                        `;
+                    } else {
+                        let bookingHtml = `
+                            <div class="booking-details">
+                                <h6><i class="fas fa-calendar-day me-2"></i> Detail Booking Tanggal ${formatDate(date)}</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Kode Booking</th>
+                                                <th>Tamu</th>
+                                                <th>Hotel</th>
+                                                <th>Check-in</th>
+                                                <th>Check-out</th>
+                                                <th>Kamar</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+                        
+                        sampleBookings.forEach(booking => {
+                            const statusClass = booking.status === 'berhasil' ? 'success' : 
+                                              (booking.status === 'selesai' ? 'info' :
+                                              (booking.status === 'pending' ? 'warning' : 'danger'));
+                            
+                            bookingHtml += `
+                                <tr>
+                                    <td><strong>${booking.kode_booking}</strong></td>
+                                    <td>${booking.nama_depan} ${booking.nama_belakang}</td>
+                                    <td>${booking.nama_hotel}</td>
+                                    <td>${formatDate(booking.tanggal_checkin)}</td>
+                                    <td>${formatDate(booking.tanggal_checkout)}</td>
+                                    <td>${booking.jumlah_kamar} kamar, ${booking.jumlah_orang} orang</td>
+                                    <td>${formatRupiah(booking.total_harga)}</td>
+                                    <td><span class="badge bg-${statusClass}">${booking.status}</span></td>
+                                </tr>
+                            `;
+                        });
+                        
+                        bookingHtml += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> 
+                                        Total ${sampleBookings.length} booking pada tanggal ini
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                        
+                        detailsDiv.innerHTML = bookingHtml;
+                    }
+                }, 500);
+            } else {
+                bookingRow.style.display = 'none';
+            }
+        }
+        
+        // Export revenue function
+        function exportRevenue(period) {
+            showAlert('Export ' + period + ' revenue report - Feature akan diimplementasikan', 'info');
+        }
+        
+        // Enhanced helper functions
+        function formatDateIndonesian(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric'
+            });
+        }
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+        
+        // Enhanced modal functions
+        function editHotel(hotel) {
+            document.getElementById('editHotelId').value = hotel.id_hotel;
+            document.getElementById('editNamaHotel').value = hotel.nama_hotel;
+            document.getElementById('editLokasi').value = hotel.lokasi;
+            document.getElementById('editHarga').value = hotel.harga_per_malam;
+            document.getElementById('editStok').value = hotel.stok_kamar;
+            document.getElementById('editDeskripsi').value = hotel.deskripsi;
+            
+            document.getElementById('editFoto').value = '';
+            const currentPhotoText = document.getElementById('currentPhotoText');
+            if (hotel.foto) {
+                if (hotel.foto.startsWith('http')) {
+                    currentPhotoText.textContent = 'URL Link';
+                } else {
+                    currentPhotoText.textContent = 'File Upload';
+                }
+            } else {
+                currentPhotoText.textContent = 'Tidak ada foto';
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('editHotelModal'));
+            modal.show();
+        }
+        
+        function updateStock(hotelId, hotelName, currentStock) {
+            document.getElementById('stockHotelId').value = hotelId;
+            document.getElementById('stockHotelName').value = hotelName;
+            document.getElementById('currentStock').value = currentStock;
+            document.getElementById('newStock').value = currentStock;
+            
+            const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+            modal.show();
+        }
+        
+        function editUser(user) {
+            document.getElementById('editUserId').value = user.id_pengguna;
+            document.getElementById('editNamaDepan').value = user.nama_depan;
+            document.getElementById('editNamaBelakang').value = user.nama_belakang;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editHakAkses').value = user.hak_akses;
+            document.getElementById('editPassword').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            modal.show();
+        }
+        
+        function deleteHotel(id, name) {
+            document.getElementById('deleteMessage').textContent = `Apakah Anda yakin ingin menghapus hotel "${name}"?`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+            
+            document.getElementById('confirmDelete').onclick = function() {
+                showAlert('Hotel berhasil dihapus', 'success');
+                modal.hide();
+            };
+        }
+        
+        function deleteUser(id, name) {
+            document.getElementById('deleteMessage').textContent = `Apakah Anda yakin ingin menghapus user "${name}"?`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+            
+            document.getElementById('confirmDelete').onclick = function() {
+                showAlert('User berhasil dihapus', 'success');
+                modal.hide();
+            };
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('successAlert');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertMessage.textContent = message;
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Enhanced form submissions
+        document.getElementById('addHotelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('Hotel berhasil ditambahkan', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addHotelModal')).hide();
+            this.reset();
+        });
+        
+        document.getElementById('editHotelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('Hotel berhasil diperbarui', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editHotelModal')).hide();
+        });
+        
+        document.getElementById('updateStockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('Stok kamar berhasil diperbarui', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('updateStockModal')).hide();
+        });
+        
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('User berhasil diperbarui', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        });
+        
+        // Add smooth scrolling to anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add loading state to buttons
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Memproses...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riwayat Transaksi - HotelFuture</title>
+    <title>Riwayat Transaksi - HotelAurora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
@@ -24,11 +24,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
 <body> 
     <header class="header">
         <nav class="navbar navbar-expand-lg">
-            <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <i class="fas fa-hotel"></i> HotelFuture
-                </a>
-                
+               <h2>🏨 HotelAurora</h2>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -36,7 +32,6 @@ $bookings = getUserBookings($_SESSION['user_id']);
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="index.php">Beranda</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="user.php">Dashboard</a>
@@ -288,7 +283,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
     <footer class="footer">
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
+                 <p>&copy; 2025 HotelAurora. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -438,7 +433,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
                 </head>
                 <body>
                     <div class="header">
-                        <h1 style="color: #1a365d; margin: 0;">🏨 HotelFuture</h1>
+                        <h1 style="color: #1a365d; margin: 0;">🏨 HotelAurora</h1>
                         <h2 style="margin: 10px 0;">Bukti Pemesanan Hotel</h2>
                         <div class="booking-code">${bookingCode}</div>
                     </div>
@@ -498,7 +493,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
                     <div class="footer">
                         <p><strong>Status: BERHASIL - Booking Dikonfirmasi</strong></p>
                         <p>Tunjukkan bukti ini saat check-in di hotel.</p>
-                        <p>Terima kasih telah menggunakan HotelFuture!</p>
+                        <p>Terima kasih telah menggunakan HotelAurora!</p>
                         <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
                     </div>
                 </body>
@@ -533,7 +528,7 @@ $bookings = getUserBookings($_SESSION['user_id']);
                 </head>
                 <body>
                     <div class="header">
-                        <h1 style="color: #1a365d; margin: 0; font-size: 36px;">🏨 HotelFuture</h1>
+                        <h1 style="color: #1a365d; margin: 0; font-size: 36px;">🏨 HotelAurora</h1>
                         <h2 style="margin: 15px 0; color: #2d3748;">Detail Pemesanan Hotel</h2>
                         <div class="booking-code">${booking.kode_booking || 'N/A'}</div>
                     </div>
@@ -611,9 +606,9 @@ $bookings = getUserBookings($_SESSION['user_id']);
                     </div>
                     
                     <div class="footer">
-                        <p><strong>Terima kasih telah menggunakan HotelFuture!</strong></p>
+                        <p><strong>Terima kasih telah menggunakan HotelAurora!</strong></p>
                         <p>Tunjukkan bukti ini saat check-in di hotel.</p>
-                        <p>Untuk bantuan, hubungi customer service kami di info@hotelfuture.com</p>
+                        <p>Untuk bantuan, hubungi customer service kami di info@HotelAurora.com</p>
                         <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} pukul ${new Date().toLocaleTimeString('id-ID')}</p>
                     </div>
                 </body>

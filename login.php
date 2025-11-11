@@ -29,7 +29,7 @@ if ($_POST) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - HotelFuture</title>
+    <title>Login - HotelAurora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
@@ -39,10 +39,7 @@ if ($_POST) {
     <header class="header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <i class="fas fa-hotel"></i> HotelFuture
-                </a>
-                
+              <h2>🏨 HotelAurora</h2>
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" href="index.php">
                         <i class="fas fa-home"></i> Beranda
@@ -63,7 +60,7 @@ if ($_POST) {
                     <div class="card">
                         <div class="card-header text-center">
                             <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
-                            <p class="mb-0">Masuk ke akun HotelFuture Anda</p>
+                            <p class="mb-0">Masuk ke akun HotelAurora Anda</p>
                         </div>
                         
                         <div class="card-body">
@@ -120,7 +117,7 @@ if ($_POST) {
     <footer class="footer">
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
+                <p>&copy; 2025 HotelAurora. All rights reserved.</p>
             </div>
         </div>
     </footer>

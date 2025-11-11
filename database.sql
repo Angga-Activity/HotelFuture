@@ -1,13 +1,13 @@
--- HotelFuture Database Schema
--- Created for HotelFuture Hotel Booking System
+-- HotelAurora Database Schema
+-- Created for HotelAurora Hotel Booking System
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
--- Database: hotelfuture
-CREATE DATABASE IF NOT EXISTS `hotelfuture` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `hotelfuture`;
+-- Database: HotelAurora
+CREATE DATABASE IF NOT EXISTS `HotelAurora` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `HotelAurora`;
 
 -- --------------------------------------------------------
 
@@ -101,7 +101,7 @@ CREATE TABLE `api_key` (
 -- --------------------------------------------------------
 
 INSERT INTO `pengguna` (`nama_depan`, `nama_belakang`, `email`, `password`, `hak_akses`) VALUES
-('Admin', 'HotelFuture', 'admin@hotelfuture.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+('Admin', 'HotelAurora', 'admin@HotelAurora.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
 
 
 INSERT INTO `pengguna` (`nama_depan`, `nama_belakang`, `email`, `password`, `hak_akses`) VALUES

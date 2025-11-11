@@ -1,4 +1,4 @@
-# 🏨 HotelFuture - Sistem Pemesanan Hotel Modern
+# 🏨 HotelAurora - Sistem Pemesanan Hotel Modern
 
 Sistem pemesanan hotel berbasis web yang lengkap dengan fitur admin panel, manajemen user, dan sistem pembayaran e-wallet.
 
@@ -63,47 +63,47 @@ Sistem pemesanan hotel berbasis web yang lengkap dengan fitur admin panel, manaj
 ### 1. **Clone Repository**
 ```bash
 <<<<<<< HEAD
-git clone https://github.com/username/hotelfuture.git
+git clone https://github.com/username/HotelAurora.git
 =======
-git clone https://github.com/Angga-Activit/hotelfuture.git
+git clone https://github.com/Angga-Activit/HotelAurora.git
 >>>>>>> c9a955e46ae1c5c528eccc22d2ab38b737d72ce3
-cd hotelfuture
+cd HotelAurora
 ```
 
 ### 2. **Setup Web Server**
-- **XAMPP/WAMP**: Copy folder ke `htdocs/hotelfuture`
-- **LAMP**: Copy ke `/var/www/html/hotelfuture`
+- **XAMPP/WAMP**: Copy folder ke `htdocs/HotelAurora`
+- **LAMP**: Copy ke `/var/www/html/HotelAurora`
 - **Local Server**: `php -S localhost:8000`
 
 ### 3. **Setup Database**
-1. Buat database baru bernama `hotelfuture`
-2. Import file `hotelfuture.sql`
+1. Buat database baru bernama `HotelAurora`
+2. Import file `HotelAurora.sql`
 3. Update konfigurasi di `config.php`
 
 ### 4. **Konfigurasi**
 Edit file `config.php`:
 ```php
 $host = 'localhost';
-$dbname = 'hotelfuture';
+$dbname = 'HotelAurora';
 $username = 'root';
 $password = '';
 ```
 
 ### 5. **Akses Aplikasi**
-- **User Interface**: `http://localhost/hotelfuture/`
+- **User Interface**: `http://localhost/HotelAurora/`
 - **Admin Panel**: Login sebagai admin
 
 ## 🗄 Konfigurasi Database
 
 ### **Buat Database**
 ```sql
-CREATE DATABASE hotelfuture;
-USE hotelfuture;
+CREATE DATABASE HotelAurora;
+USE HotelAurora;
 ```
 
 ### **Import Schema**
 ```bash
-mysql -u root -p hotelfuture < hotelfuture.sql
+mysql -u root -p HotelAurora < HotelAurora.sql
 ```
 
 ### **Struktur Tabel**
@@ -114,7 +114,7 @@ mysql -u root -p hotelfuture < hotelfuture.sql
 ## 📁 Struktur File
 
 ```
-hotelfuture/
+HotelAurora/
 ├── 📄 index.php              # Halaman utama & pencarian hotel
 ├── 📄 login.php              # Halaman login
 ├── 📄 daftar.php             # Registrasi user baru
@@ -131,7 +131,7 @@ hotelfuture/
 ├── 📄 style.css              # Styling futuristik
 ├── 📄 script.js              # JavaScript interactions
 ├── 📄 validator.js           # Validasi form client-side
-├── 📄 hotelfuture.sql        # Database schema + sample data
+├── 📄 HotelAurora.sql        # Database schema + sample data
 ├── 📁 api/
 │   ├── 📄 hotel.php          # API data hotel
 │   ├── 📄 pemesanan.php      # API booking
@@ -228,7 +228,7 @@ fetch('api/laporan.php?type=period&start=2025-01-01&end=2025-01-31')
 ## 🔐 Akun Default
 
 ### **Admin**
-- **Email**: `admin@hotelfuture.com`
+- **Email**: `admin@HotelAurora.com`
 - **Password**: `admin123`
 - **Akses**: Full admin panel
 
@@ -312,7 +312,7 @@ Warning: file_get_contents(): failed to open stream
 ```
 **Solusi**: Set permission folder ke 755
 ```bash
-chmod -R 755 hotelfuture/
+chmod -R 755 HotelAurora/
 ```
 
 ### **Session Issues**
@@ -384,13 +384,13 @@ EXPOSE 80
 
 ## 📞 Support
 
-- **Email**: support@hotelfuture.com
+- **Email**: support@HotelAurora.com
 <<<<<<< HEAD
-- **Documentation**: [Wiki](https://github.com/username/hotelfuture/wiki)
-- **Issues**: [GitHub Issues](https://github.com/username/hotelfuture/issues)
+- **Documentation**: [Wiki](https://github.com/username/HotelAurora/wiki)
+- **Issues**: [GitHub Issues](https://github.com/username/HotelAurora/issues)
 =======
-- **Documentation**: [Wiki](https://github.com/Angga-Activit/hotelfuture/wiki)
-- **Issues**: [GitHub Issues](https://github.com/Angga-Activit/hotelfuture/issues)
+- **Documentation**: [Wiki](https://github.com/Angga-Activit/HotelAurora/wiki)
+- **Issues**: [GitHub Issues](https://github.com/Angga-Activit/HotelAurora/issues)
 >>>>>>> c9a955e46ae1c5c528eccc22d2ab38b737d72ce3
 
 ## 📄 License
@@ -400,7 +400,7 @@ MIT License - lihat file [LICENSE](LICENSE) untuk detail lengkap.
 ---
 
 <<<<<<< HEAD
-**Dibuat dengan ❤️ oleh Tim HotelFuture**
+**Dibuat dengan ❤️ oleh Tim HotelAurora**
 
 > **Note**: Sistem ini dibuat untuk keperluan pembelajaran dan demo. Untuk production, pastikan menambahkan security layer tambahan dan testing yang komprehensif.
 =======

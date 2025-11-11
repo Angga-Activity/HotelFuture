@@ -7,6 +7,9 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+// Auto-update booking status
+updateBookingStatusByDate();
+
 // Get statistics
 $stmt = $pdo->query("SELECT COUNT(*) as total_users FROM pengguna WHERE hak_akses = 'user'");
 $total_users = $stmt->fetch()['total_users'];
@@ -17,7 +20,7 @@ $total_hotels = $stmt->fetch()['total_hotels'];
 $stmt = $pdo->query("SELECT COUNT(*) as total_bookings FROM pemesanan");
 $total_bookings = $stmt->fetch()['total_bookings'];
 
-$stmt = $pdo->query("SELECT SUM(total_harga) as total_revenue FROM pemesanan WHERE status = 'berhasil'");
+$stmt = $pdo->query("SELECT SUM(total_harga) as total_revenue FROM pemesanan WHERE status IN ('berhasil', 'selesai')");
 $total_revenue = $stmt->fetch()['total_revenue'] ?: 0;
 
 // Get low stock hotels
@@ -36,8 +39,87 @@ $recent_bookings = $stmt->fetchAll();
 // Get all users
 $all_users = getAllUsers();
 
-// Get monthly revenue
+// Handle AJAX request for filtered revenue
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'filtered_revenue') {
+    $period = $_GET['period'] ?? 'daily';
+    $start_date = $_GET['start_date'] ?? '';
+    $end_date = $_GET['end_date'] ?? '';
+    
+    $revenue_data = [];
+    
+    if ($period === 'daily' && $start_date && $end_date) {
+        $stmt = $pdo->prepare("SELECT DATE(p.tanggal_pemesanan) as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
+                GROUP BY DATE(p.tanggal_pemesanan) 
+                ORDER BY periode DESC");
+        $stmt->execute([$start_date, $end_date]);
+        $revenue_data = $stmt->fetchAll();
+    } elseif ($period === 'monthly' && $start_date && $end_date) {
+        $stmt = $pdo->prepare("SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') AND DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') BETWEEN ? AND ?
+                GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') 
+                ORDER BY periode DESC");
+        $stmt->execute([$start_date, $end_date]);
+        $revenue_data = $stmt->fetchAll();
+    } elseif ($period === 'yearly' && $start_date && $end_date) {
+        $stmt = $pdo->prepare("SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y') as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                FROM pemesanan p 
+                WHERE p.status IN ('berhasil', 'selesai') AND DATE_FORMAT(p.tanggal_pemesanan, '%Y') BETWEEN ? AND ?
+                GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y') 
+                ORDER BY periode DESC");
+        $stmt->execute([$start_date, $end_date]);
+        $revenue_data = $stmt->fetchAll();
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($revenue_data);
+    exit;
+}
+
+// Get revenue reports (default data)
+$daily_revenue = getRevenueReport('daily');
 $monthly_revenue = getRevenueReport('monthly');
+
+// Get yearly revenue
+$stmt = $pdo->query("SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y') as periode, SUM(p.total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                    FROM pemesanan p 
+                    WHERE p.status IN ('berhasil', 'selesai') AND p.tanggal_pemesanan >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)
+                    GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y') 
+                    ORDER BY periode DESC");
+$yearly_revenue = $stmt->fetchAll();
+
+// Handle AJAX request for daily bookings
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'daily_bookings' && isset($_GET['date'])) {
+    $date = $_GET['date'];
+    
+    $stmt = $pdo->prepare("SELECT p.*, h.nama_hotel, u.nama_depan, u.nama_belakang 
+                          FROM pemesanan p 
+                          JOIN hotel h ON p.id_hotel = h.id_hotel 
+                          JOIN pengguna u ON p.id_pengguna = u.id_pengguna 
+                          WHERE DATE(p.tanggal_pemesanan) = ? 
+                          ORDER BY p.tanggal_pemesanan DESC");
+    $stmt->execute([$date]);
+    $bookings = $stmt->fetchAll();
+    
+    // Get revenue for this date
+    $stmt = $pdo->prepare("SELECT SUM(total_harga) as total_pendapatan, COUNT(*) as jumlah_transaksi
+                          FROM pemesanan 
+                          WHERE status IN ('berhasil', 'selesai') 
+                          AND DATE(tanggal_pemesanan) = ?");
+    $stmt->execute([$date]);
+    $revenue = $stmt->fetch();
+    
+    $response = [
+        'bookings' => $bookings,
+        'revenue' => $revenue
+    ];
+    
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
+}
 
 // Handle form submissions
 $message = '';
@@ -48,11 +130,23 @@ if ($_POST) {
         $harga_per_malam = (int)$_POST['harga_per_malam'];
         $deskripsi = sanitizeInput($_POST['deskripsi']);
         $stok_kamar = (int)$_POST['stok_kamar'];
-        $foto = sanitizeInput($_POST['foto']);
         
-        $stmt = $pdo->prepare("INSERT INTO hotel (nama_hotel, lokasi, harga_per_malam, deskripsi, stok_kamar, foto) VALUES (?, ?, ?, ?, ?, ?)");
-        if ($stmt->execute([$nama_hotel, $lokasi, $harga_per_malam, $deskripsi, $stok_kamar, $foto])) {
-            $message = 'Hotel berhasil ditambahkan';
+        // Handle photo upload or URL
+        $foto = '';
+        if (!empty($_FILES['foto_upload']['name'])) {
+            $foto = handleHotelPhotoUpload($_FILES['foto_upload']);
+            if (!$foto) {
+                $message = 'Error uploading photo. Please try again.';
+            }
+        } elseif (!empty($_POST['foto_url'])) {
+            $foto = sanitizeInput($_POST['foto_url']);
+        }
+        
+        if (empty($message)) {
+            $stmt = $pdo->prepare("INSERT INTO hotel (nama_hotel, lokasi, harga_per_malam, deskripsi, stok_kamar, foto) VALUES (?, ?, ?, ?, ?, ?)");
+            if ($stmt->execute([$nama_hotel, $lokasi, $harga_per_malam, $deskripsi, $stok_kamar, $foto])) {
+                $message = 'Hotel berhasil ditambahkan';
+            }
         }
     } elseif (isset($_POST['edit_hotel'])) {
         $hotel_id = (int)$_POST['hotel_id'];
@@ -61,7 +155,20 @@ if ($_POST) {
         $harga_per_malam = (int)$_POST['harga_per_malam'];
         $deskripsi = sanitizeInput($_POST['deskripsi']);
         $stok_kamar = (int)$_POST['stok_kamar'];
-        $foto = sanitizeInput($_POST['foto']);
+        
+        // Get current hotel data
+        $current_hotel = getHotelById($hotel_id);
+        $foto = $current_hotel['foto']; // Keep current photo as default
+        
+        // Handle photo upload or URL
+        if (!empty($_FILES['foto_upload']['name'])) {
+            $new_foto = handleHotelPhotoUpload($_FILES['foto_upload']);
+            if ($new_foto) {
+                $foto = $new_foto;
+            }
+        } elseif (!empty($_POST['foto_url']) && $_POST['foto_url'] !== $current_hotel['foto']) {
+            $foto = sanitizeInput($_POST['foto_url']);
+        }
         
         $stmt = $pdo->prepare("UPDATE hotel SET nama_hotel = ?, lokasi = ?, harga_per_malam = ?, deskripsi = ?, stok_kamar = ?, foto = ? WHERE id_hotel = ?");
         if ($stmt->execute([$nama_hotel, $lokasi, $harga_per_malam, $deskripsi, $stok_kamar, $foto, $hotel_id])) {
@@ -130,20 +237,274 @@ $all_hotels = getAllHotels();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - HotelFuture</title>
+    <title>Admin Dashboard - HotelAurora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+    <style>
+        .filter-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .btn-filter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .date-picker-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .date-picker-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .date-input-group:hover {
+            border-color: #007bff;
+        }
+        
+        .date-input-group i {
+            color: #007bff;
+            font-size: 1.2rem;
+        }
+        
+        .date-input {
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .revenue-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .revenue-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .revenue-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .revenue-card.info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .revenue-card h4 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .revenue-card p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .booking-details {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .no-bookings {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            color: #856404;
+            text-align: center;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        
+        .clear-date-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-date-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .date-clickable {
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+        .date-clickable:hover {
+            color: #0056b3;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .date-picker-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .revenue-summary {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .revenue-card h4 {
+                font-size: 1.5rem;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <i class="fas fa-hotel"></i> HotelFuture
-                </a>
-                
+                   <h2>🏨 HotelAurora</h2>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -247,6 +608,300 @@ $all_hotels = getAllHotels();
                 </ul>
             </div>
         <?php endif; ?>
+
+        <!-- Revenue Report -->
+        <div class="card mb-5" id="revenue">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4><i class="fas fa-chart-line"></i> Laporan Pendapatan</h4>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="showRevenueReport('daily')" id="btnDaily">Harian</button>
+                    <button class="btn btn-outline-primary" onclick="showRevenueReport('monthly')" id="btnMonthly">Bulanan</button>
+                    <button class="btn btn-outline-primary" onclick="showRevenueReport('yearly')" id="btnYearly">Tahunan</button>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Daily Revenue -->
+                <div id="dailyRevenue">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Laporan Pendapatan Harian</h5>
+                        <button class="btn btn-success" onclick="exportRevenue('daily')">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Harian -->
+                    <div class="filter-container">
+                        <h6 class="mb-3"><i class="fas fa-filter"></i> Filter Periode Harian</h6>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label>Dari Tanggal</label>
+                                <input type="date" id="dailyStartDate" class="form-control">
+                            </div>
+                            <div class="filter-group">
+                                <label>Sampai Tanggal</label>
+                                <input type="date" id="dailyEndDate" class="form-control">
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-filter" onclick="applyDailyFilter()">
+                                    <i class="fas fa-search"></i> Tampilkan
+                                </button>
+                                <button class="btn-reset" onclick="resetDailyFilter()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="date-picker-container">
+                        <div class="date-picker-header">
+                            <div class="date-input-group">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" class="date-input" id="selectedDate" placeholder="Pilih tanggal...">
+                            </div>
+                            <button class="clear-date-btn" onclick="clearSelectedDate()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                            <div class="ms-auto">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> Pilih tanggal untuk melihat detail pendapatan dan booking
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Revenue Summary (hidden by default) -->
+                        <div id="revenueSummary" style="display: none;">
+                            <div class="revenue-summary">
+                                <div class="revenue-card success">
+                                    <h4 id="totalPendapatan">Rp 0</h4>
+                                    <p>Total Pendapatan</p>
+                                </div>
+                                <div class="revenue-card info">
+                                    <h4 id="jumlahTransaksi">0</h4>
+                                    <p>Total Transaksi</p>
+                                </div>
+                                <div class="revenue-card">
+                                    <h4 id="rataRata">Rp 0</h4>
+                                    <p>Rata-rata per Transaksi</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Details Container -->
+                        <div id="bookingDetailsContainer">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-calendar-plus fa-3x mb-3"></i>
+                                <h5>Pilih Tanggal</h5>
+                                <p>Pilih tanggal di atas untuk melihat detail pendapatan dan booking</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted"><i class="fas fa-info-circle"></i> Klik pada tanggal untuk melihat detail booking pada hari tersebut</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="dailyRevenueTable">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Pendapatan</th>
+                                    <th>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailyRevenueBody">
+                                <?php foreach ($daily_revenue as $revenue): 
+                                    $avg_per_transaction = $revenue['jumlah_transaksi'] > 0 ? $revenue['total_pendapatan'] / $revenue['jumlah_transaksi'] : 0;
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <strong class="date-clickable" onclick="showDailyBookings('<?= $revenue['periode'] ?>')"><?= formatDate($revenue['periode']) ?></strong>
+                                        </td>
+                                        <td><span class="badge bg-info"><?= $revenue['jumlah_transaksi'] ?> transaksi</span></td>
+                                        <td><strong class="text-success"><?= formatRupiah($revenue['total_pendapatan']) ?></strong></td>
+                                        <td><?= formatRupiah($avg_per_transaction) ?></td>
+                                    </tr>
+                                    <tr id="bookings-<?= $revenue['periode'] ?>" style="display: none;">
+                                        <td colspan="4">
+                                            <div id="booking-details-<?= $revenue['periode'] ?>">
+                                                <!-- Booking details will be loaded here -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue -->
+                <div id="monthlyRevenue" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Laporan Pendapatan Bulanan</h5>
+                        <button class="btn btn-success" onclick="exportRevenue('monthly')">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Bulanan -->
+                    <div class="filter-container">
+                        <h6 class="mb-3"><i class="fas fa-filter"></i> Filter Periode Bulanan</h6>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label>Dari Bulan</label>
+                                <input type="month" id="monthlyStartDate" class="form-control">
+                            </div>
+                            <div class="filter-group">
+                                <label>Sampai Bulan</label>
+                                <input type="month" id="monthlyEndDate" class="form-control">
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-filter" onclick="applyMonthlyFilter()">
+                                    <i class="fas fa-search"></i> Tampilkan
+                                </button>
+                                <button class="btn-reset" onclick="resetMonthlyFilter()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="monthlyRevenueTable">
+                            <thead>
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Pendapatan</th>
+                                    <th>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyRevenueBody">
+                                <?php 
+                                $total_revenue_all = 0;
+                                $total_transactions_all = 0;
+                                foreach ($monthly_revenue as $revenue): 
+                                    $total_revenue_all += $revenue['total_pendapatan'];
+                                    $total_transactions_all += $revenue['jumlah_transaksi'];
+                                    $avg_per_transaction = $revenue['jumlah_transaksi'] > 0 ? $revenue['total_pendapatan'] / $revenue['jumlah_transaksi'] : 0;
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?= date('F Y', strtotime($revenue['periode'] . '-01')) ?></strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info"><?= $revenue['jumlah_transaksi'] ?> transaksi</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success"><?= formatRupiah($revenue['total_pendapatan']) ?></strong>
+                                        </td>
+                                        <td>
+                                            <?= formatRupiah($avg_per_transaction) ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <th><strong>TOTAL KESELURUHAN</strong></th>
+                                    <th><strong><?= $total_transactions_all ?> transaksi</strong></th>
+                                    <th><strong><?= formatRupiah($total_revenue_all) ?></strong></th>
+                                    <th><strong><?= $total_transactions_all > 0 ? formatRupiah($total_revenue_all / $total_transactions_all) : formatRupiah(0) ?></strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Yearly Revenue -->
+                <div id="yearlyRevenue" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Laporan Pendapatan Tahunan</h5>
+                        <button class="btn btn-success" onclick="exportRevenue('yearly')">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Tahunan -->
+                    <div class="filter-container">
+                        <h6 class="mb-3"><i class="fas fa-filter"></i> Filter Periode Tahunan</h6>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label>Dari Tahun</label>
+                                <select id="yearlyStartDate" class="form-control">
+                                    <option value="">Pilih Tahun</option>
+                                    <?php for($year = 2020; $year <= 2030; $year++): ?>
+                                        <option value="<?= $year ?>"><?= $year ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Sampai Tahun</label>
+                                <select id="yearlyEndDate" class="form-control">
+                                    <option value="">Pilih Tahun</option>
+                                    <?php for($year = 2020; $year <= 2030; $year++): ?>
+                                        <option value="<?= $year ?>"><?= $year ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-filter" onclick="applyYearlyFilter()">
+                                    <i class="fas fa-search"></i> Tampilkan
+                                </button>
+                                <button class="btn-reset" onclick="resetYearlyFilter()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="yearlyRevenueTable">
+                            <thead>
+                                <tr>
+                                    <th>Tahun</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Pendapatan</th>
+                                    <th>Rata-rata per Transaksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="yearlyRevenueBody">
+                                <?php 
+                                $total_revenue_yearly = 0;
+                                $total_transactions_yearly = 0;
+                                foreach ($yearly_revenue as $revenue): 
+                                    $total_revenue_yearly += $revenue['total_pendapatan'];
+                                    $total_transactions_yearly += $revenue['jumlah_transaksi'];
+                                    $avg_per_transaction = $revenue['jumlah_transaksi'] > 0 ? $revenue['total_pendapatan'] / $revenue['jumlah_transaksi'] : 0;
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?= $revenue['periode'] ?></strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info"><?= $revenue['jumlah_transaksi'] ?> transaksi</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success"><?= formatRupiah($revenue['total_pendapatan']) ?></strong>
+                                        </td>
+                                        <td>
+                                            <?= formatRupiah($avg_per_transaction) ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <th><strong>TOTAL KESELURUHAN</strong></th>
+                                    <th><strong><?= $total_transactions_yearly ?> transaksi</strong></th>
+                                    <th><strong><?= formatRupiah($total_revenue_yearly) ?></strong></th>
+                                    <th><strong><?= $total_transactions_yearly > 0 ? formatRupiah($total_revenue_yearly / $total_transactions_yearly) : formatRupiah(0) ?></strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Hotel Management -->
         <div class="card mb-5" id="hotels">
@@ -377,72 +1032,6 @@ $all_hotels = getAllHotels();
             </div>
         </div>
 
-        <!-- Revenue Report -->
-        <div class="card mb-5" id="revenue">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4><i class="fas fa-chart-line"></i> Laporan Pendapatan Bulanan</h4>
-                <div class="btn-group">
-                    <button class="btn btn-success" onclick="exportRevenue('pdf')">
-                        <i class="fas fa-file-pdf"></i> Export PDF
-                    </button>
-                    <button class="btn btn-primary" onclick="exportRevenue('csv')">
-                        <i class="fas fa-file-csv"></i> Export CSV
-                    </button>
-                    <button class="btn btn-info" onclick="printRevenue()">
-                        <i class="fas fa-print"></i> Print
-                    </button>
-                </div>
-            </div>
-            
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="revenueTable">
-                        <thead>
-                            <tr>
-                                <th>Bulan</th>
-                                <th>Jumlah Transaksi</th>
-                                <th>Total Pendapatan</th>
-                                <th>Rata-rata per Transaksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $total_revenue_all = 0;
-                            $total_transactions_all = 0;
-                            foreach ($monthly_revenue as $revenue): 
-                                $total_revenue_all += $revenue['total_pendapatan'];
-                                $total_transactions_all += $revenue['jumlah_transaksi'];
-                                $avg_per_transaction = $revenue['jumlah_transaksi'] > 0 ? $revenue['total_pendapatan'] / $revenue['jumlah_transaksi'] : 0;
-                            ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= date('F Y', strtotime($revenue['periode'] . '-01')) ?></strong>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info"><?= $revenue['jumlah_transaksi'] ?> transaksi</span>
-                                    </td>
-                                    <td>
-                                        <strong class="text-success"><?= formatRupiah($revenue['total_pendapatan']) ?></strong>
-                                    </td>
-                                    <td>
-                                        <?= formatRupiah($avg_per_transaction) ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                            <tr class="table-dark">
-                                <th><strong>TOTAL KESELURUHAN</strong></th>
-                                <th><strong><?= $total_transactions_all ?> transaksi</strong></th>
-                                <th><strong><?= formatRupiah($total_revenue_all) ?></strong></th>
-                                <th><strong><?= $total_transactions_all > 0 ? formatRupiah($total_revenue_all / $total_transactions_all) : formatRupiah(0) ?></strong></th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-
         <!-- Recent Bookings -->
         <div class="card mb-5" id="bookings">
             <div class="card-header">
@@ -477,7 +1066,8 @@ $all_hotels = getAllHotels();
                                     <td>
                                         <?php
                                         $statusClass = $booking['status'] === 'berhasil' ? 'success' : 
-                                                      ($booking['status'] === 'pending' ? 'warning' : 'danger');
+                                                      ($booking['status'] === 'selesai' ? 'info' :
+                                                      ($booking['status'] === 'pending' ? 'warning' : 'danger'));
                                         ?>
                                         <span class="badge bg-<?= $statusClass ?>">
                                             <?= ucfirst($booking['status']) ?>
@@ -536,8 +1126,17 @@ $all_hotels = getAllHotels();
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label class="form-label">URL Foto</label>
-                            <input type="url" class="form-control" name="foto" placeholder="https://example.com/hotel-image.jpg">
+                            <label class="form-label">Foto Hotel</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Upload File</label>
+                                    <input type="file" class="form-control" name="foto_upload" accept="image/*">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Atau URL Foto</label>
+                                    <input type="url" class="form-control" name="foto_url" placeholder="/images/photo1762656082.jpg">
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="form-group mb-3">
@@ -564,7 +1163,7 @@ $all_hotels = getAllHotels();
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="hotel_id" id="editHotelId">
                         
@@ -601,8 +1200,22 @@ $all_hotels = getAllHotels();
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label class="form-label">URL Foto</label>
-                            <input type="url" class="form-control" name="foto" id="editFoto" placeholder="https://example.com/hotel-image.jpg">
+                            <label class="form-label">Foto Hotel</label>
+                            <div class="mb-2">
+                                <small class="text-muted">Foto saat ini: <span id="currentPhotoText"></span></small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Upload File Baru</label>
+                                    <input type="file" class="form-control" name="foto_upload" accept="image/*">
+                                    <small class="text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Atau Ganti dengan URL</label>
+                                    <input type="url" class="form-control" name="foto_url" id="editFoto" placeholder="/images/photo1762656082.jpg">
+                                    <small class="text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="form-group mb-3">
@@ -743,7 +1356,7 @@ $all_hotels = getAllHotels();
     <footer class="footer">
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
+                <p>&copy; 2025 HotelAurora. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -752,14 +1365,463 @@ $all_hotels = getAllHotels();
     <script src="script.js"></script>
     
     <script>
+        // Show revenue report function
+        function showRevenueReport(period) {
+            // Hide all reports
+            document.getElementById('dailyRevenue').style.display = 'none';
+            document.getElementById('monthlyRevenue').style.display = 'none';
+            document.getElementById('yearlyRevenue').style.display = 'none';
+            
+            // Remove active class from all buttons
+            document.getElementById('btnDaily').classList.remove('btn-primary');
+            document.getElementById('btnDaily').classList.add('btn-outline-primary');
+            document.getElementById('btnMonthly').classList.remove('btn-primary');
+            document.getElementById('btnMonthly').classList.add('btn-outline-primary');
+            document.getElementById('btnYearly').classList.remove('btn-primary');
+            document.getElementById('btnYearly').classList.add('btn-outline-primary');
+            
+            // Show selected report and activate button
+            if (period === 'daily') {
+                document.getElementById('dailyRevenue').style.display = 'block';
+                document.getElementById('btnDaily').classList.remove('btn-outline-primary');
+                document.getElementById('btnDaily').classList.add('btn-primary');
+            } else if (period === 'monthly') {
+                document.getElementById('monthlyRevenue').style.display = 'block';
+                document.getElementById('btnMonthly').classList.remove('btn-outline-primary');
+                document.getElementById('btnMonthly').classList.add('btn-primary');
+            } else {
+                document.getElementById('yearlyRevenue').style.display = 'block';
+                document.getElementById('btnYearly').classList.remove('btn-outline-primary');
+                document.getElementById('btnYearly').classList.add('btn-primary');
+            }
+        }
+        
+        // Filter functions
+        function applyDailyFilter() {
+            const startDate = document.getElementById('dailyStartDate').value;
+            const endDate = document.getElementById('dailyEndDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Silakan pilih tanggal mulai dan tanggal akhir');
+                return;
+            }
+            
+            if (startDate > endDate) {
+                alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
+                return;
+            }
+            
+            fetchFilteredRevenue('daily', startDate, endDate);
+        }
+        
+        function applyMonthlyFilter() {
+            const startDate = document.getElementById('monthlyStartDate').value;
+            const endDate = document.getElementById('monthlyEndDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Silakan pilih bulan mulai dan bulan akhir');
+                return;
+            }
+            
+            if (startDate > endDate) {
+                alert('Bulan mulai tidak boleh lebih besar dari bulan akhir');
+                return;
+            }
+            
+            fetchFilteredRevenue('monthly', startDate, endDate);
+        }
+        
+        function applyYearlyFilter() {
+            const startDate = document.getElementById('yearlyStartDate').value;
+            const endDate = document.getElementById('yearlyEndDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Silakan pilih tahun mulai dan tahun akhir');
+                return;
+            }
+            
+            if (parseInt(startDate) > parseInt(endDate)) {
+                alert('Tahun mulai tidak boleh lebih besar dari tahun akhir');
+                return;
+            }
+            
+            fetchFilteredRevenue('yearly', startDate, endDate);
+        }
+        
+        function fetchFilteredRevenue(period, startDate, endDate) {
+            const tableBody = document.getElementById(period + 'RevenueBody');
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>';
+            
+            fetch(`admin.php?ajax=filtered_revenue&period=${period}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Tidak ada data untuk periode yang dipilih</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    let totalRevenue = 0;
+                    let totalTransactions = 0;
+                    
+                    data.forEach(revenue => {
+                        totalRevenue += parseFloat(revenue.total_pendapatan);
+                        totalTransactions += parseInt(revenue.jumlah_transaksi);
+                        const avgPerTransaction = revenue.jumlah_transaksi > 0 ? revenue.total_pendapatan / revenue.jumlah_transaksi : 0;
+                        
+                        let periodeDisplay = revenue.periode;
+                        if (period === 'daily') {
+                            periodeDisplay = formatDate(revenue.periode);
+                        } else if (period === 'monthly') {
+                            const date = new Date(revenue.periode + '-01');
+                            periodeDisplay = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                        }
+                        
+                        html += `
+                            <tr>
+                                <td><strong>${periodeDisplay}</strong></td>
+                                <td><span class="badge bg-info">${revenue.jumlah_transaksi} transaksi</span></td>
+                                <td><strong class="text-success">${formatRupiah(revenue.total_pendapatan)}</strong></td>
+                                <td>${formatRupiah(avgPerTransaction)}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = html;
+                    
+                    // Update footer
+                    const avgTotal = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+                    const table = document.getElementById(period + 'RevenueTable');
+                    let tfoot = table.querySelector('tfoot');
+                    if (tfoot) {
+                        tfoot.innerHTML = `
+                            <tr class="table-dark">
+                                <th><strong>TOTAL KESELURUHAN</strong></th>
+                                <th><strong>${totalTransactions} transaksi</strong></th>
+                                <th><strong>${formatRupiah(totalRevenue)}</strong></th>
+                                <th><strong>${formatRupiah(avgTotal)}</strong></th>
+                            </tr>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Terjadi kesalahan saat memuat data</td></tr>';
+                });
+        }
+        
+        function resetDailyFilter() {
+            document.getElementById('dailyStartDate').value = '';
+            document.getElementById('dailyEndDate').value = '';
+            location.reload();
+        }
+        
+        function resetMonthlyFilter() {
+            document.getElementById('monthlyStartDate').value = '';
+            document.getElementById('monthlyEndDate').value = '';
+            location.reload();
+        }
+        
+        function resetYearlyFilter() {
+            document.getElementById('yearlyStartDate').value = '';
+            document.getElementById('yearlyEndDate').value = '';
+            location.reload();
+        }
+        
+        // Date picker functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('selectedDate');
+            const revenueSummary = document.getElementById('revenueSummary');
+            const bookingContainer = document.getElementById('bookingDetailsContainer');
+            
+            dateInput.addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate) {
+                    loadDailyData(selectedDate);
+                } else {
+                    clearData();
+                }
+            });
+        });
+        
+        function loadDailyData(date) {
+            const container = document.getElementById('bookingDetailsContainer');
+            const revenueSummary = document.getElementById('revenueSummary');
+            
+            // Show loading
+            container.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p>Memuat data untuk tanggal ${formatDateIndonesian(date)}...</p>
+                </div>
+            `;
+            
+            // Fetch data
+            fetch(`admin.php?ajax=daily_bookings&date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    const bookings = data.bookings || [];
+                    const revenue = data.revenue || {total_pendapatan: 0, jumlah_transaksi: 0};
+                    
+                    // Show revenue summary
+                    revenueSummary.style.display = 'block';
+                    document.getElementById('totalPendapatan').textContent = formatRupiah(revenue.total_pendapatan || 0);
+                    document.getElementById('jumlahTransaksi').textContent = revenue.jumlah_transaksi || 0;
+                    
+                    const avgPerTransaction = revenue.jumlah_transaksi > 0 ? 
+                        (revenue.total_pendapatan / revenue.jumlah_transaksi) : 0;
+                    document.getElementById('rataRata').textContent = formatRupiah(avgPerTransaction);
+                    
+                    // Show booking details
+                    if (bookings.length === 0) {
+                        container.innerHTML = `
+                            <div class="no-bookings">
+                                <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                <h5>Tidak ada pesanan pada tanggal ${formatDateIndonesian(date)}</h5>
+                                <p class="mb-0">Belum ada pemesanan hotel yang masuk pada hari ini.</p>
+                            </div>
+                        `;
+                    } else {
+                        let bookingHtml = `
+                            <div class="booking-details">
+                                <h5><i class="fas fa-calendar-day"></i> Detail Booking Tanggal ${formatDateIndonesian(date)}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Kode Booking</th>
+                                                <th>Tamu</th>
+                                                <th>Hotel</th>
+                                                <th>Check-in</th>
+                                                <th>Check-out</th>
+                                                <th>Kamar</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+                        
+                        let totalRevenue = 0;
+                        bookings.forEach(booking => {
+                            const statusClass = booking.status === 'berhasil' ? 'success' : 
+                                              (booking.status === 'selesai' ? 'info' :
+                                              (booking.status === 'pending' ? 'warning' : 'danger'));
+                            
+                            if (booking.status === 'berhasil' || booking.status === 'selesai') {
+                                totalRevenue += parseInt(booking.total_harga);
+                            }
+                            
+                            bookingHtml += `
+                                <tr>
+                                    <td><strong>${booking.kode_booking}</strong></td>
+                                    <td>${booking.nama_depan} ${booking.nama_belakang}</td>
+                                    <td>${booking.nama_hotel}</td>
+                                    <td>${formatDateIndonesian(booking.tanggal_checkin)}</td>
+                                    <td>${formatDateIndonesian(booking.tanggal_checkout)}</td>
+                                    <td>${booking.jumlah_kamar} kamar, ${booking.jumlah_orang} orang</td>
+                                    <td><strong>${formatRupiah(booking.total_harga)}</strong></td>
+                                    <td><span class="badge bg-${statusClass}">${booking.status}</span></td>
+                                </tr>
+                            `;
+                        });
+                        
+                        bookingHtml += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <div class="row text-center">
+                                        <div class="col-md-4">
+                                            <h6 class="text-primary">Total Booking</h6>
+                                            <h4>${bookings.length}</h4>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6 class="text-success">Total Pendapatan</h6>
+                                            <h4>${formatRupiah(totalRevenue)}</h4>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6 class="text-info">Rata-rata</h6>
+                                            <h4>${bookings.length > 0 ? formatRupiah(totalRevenue / bookings.length) : 'Rp 0'}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        container.innerHTML = bookingHtml;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Terjadi kesalahan saat memuat data booking.
+                        </div>
+                    `;
+                });
+        }
+        
+        function clearSelectedDate() {
+            document.getElementById('selectedDate').value = '';
+            clearData();
+        }
+        
+        function clearData() {
+            document.getElementById('revenueSummary').style.display = 'none';
+            document.getElementById('bookingDetailsContainer').innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-calendar-plus fa-3x mb-3"></i>
+                    <h5>Pilih Tanggal</h5>
+                    <p>Pilih tanggal di atas untuk melihat detail pendapatan dan booking</p>
+                </div>
+            `;
+        }
+        
+        // New function to show daily bookings (for table view)
+        function showDailyBookings(date) {
+            const bookingRow = document.getElementById('bookings-' + date);
+            const detailsDiv = document.getElementById('booking-details-' + date);
+            
+            // Toggle visibility
+            if (bookingRow.style.display === 'none') {
+                // Show loading
+                detailsDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Memuat data booking...</div>';
+                bookingRow.style.display = 'table-row';
+                
+                // Fetch booking data
+                fetch('admin.php?ajax=daily_bookings&date=' + date)
+                    .then(response => response.json())
+                    .then(data => {
+                        const bookings = data.bookings || [];
+                        if (bookings.length === 0) {
+                            detailsDiv.innerHTML = `
+                                <div class="no-bookings">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Tidak ada yang pesan hotel pada tanggal ${formatDate(date)}</strong>
+                                    <p class="mb-0">Belum ada pemesanan hotel yang masuk pada hari ini.</p>
+                                </div>
+                            `;
+                        } else {
+                            let bookingHtml = `
+                                <div class="booking-details">
+                                    <h6><i class="fas fa-calendar-day"></i> Detail Booking Tanggal ${formatDate(date)}</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Kode Booking</th>
+                                                    <th>Tamu</th>
+                                                    <th>Hotel</th>
+                                                    <th>Check-in</th>
+                                                    <th>Check-out</th>
+                                                    <th>Kamar</th>
+                                                    <th>Total</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                            `;
+                            
+                            bookings.forEach(booking => {
+                                const statusClass = booking.status === 'berhasil' ? 'success' : 
+                                                  (booking.status === 'selesai' ? 'info' :
+                                                  (booking.status === 'pending' ? 'warning' : 'danger'));
+                                
+                                bookingHtml += `
+                                    <tr>
+                                        <td><strong>${booking.kode_booking}</strong></td>
+                                        <td>${booking.nama_depan} ${booking.nama_belakang}</td>
+                                        <td>${booking.nama_hotel}</td>
+                                        <td>${formatDate(booking.tanggal_checkin)}</td>
+                                        <td>${formatDate(booking.tanggal_checkout)}</td>
+                                        <td>${booking.jumlah_kamar} kamar, ${booking.jumlah_orang} orang</td>
+                                        <td>${formatRupiah(booking.total_harga)}</td>
+                                        <td><span class="badge bg-${statusClass}">${booking.status}</span></td>
+                                    </tr>
+                                `;
+                            });
+                            
+                            bookingHtml += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle"></i> 
+                                            Total ${bookings.length} booking pada tanggal ini
+                                        </small>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            detailsDiv.innerHTML = bookingHtml;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        detailsDiv.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Terjadi kesalahan saat memuat data booking.
+                            </div>
+                        `;
+                    });
+            } else {
+                // Hide the row
+                bookingRow.style.display = 'none';
+            }
+        }
+        
+        // Export revenue function
+        function exportRevenue(period) {
+            window.open('export_revenue.php?period=' + period, '_blank');
+        }
+        
+        // Helper functions
+        function formatDateIndonesian(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric'
+            });
+        }
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+        
         function editHotel(hotel) {
             document.getElementById('editHotelId').value = hotel.id_hotel;
             document.getElementById('editNamaHotel').value = hotel.nama_hotel;
             document.getElementById('editLokasi').value = hotel.lokasi;
             document.getElementById('editHarga').value = hotel.harga_per_malam;
             document.getElementById('editStok').value = hotel.stok_kamar;
-            document.getElementById('editFoto').value = hotel.foto || '';
             document.getElementById('editDeskripsi').value = hotel.deskripsi;
+            
+            // Clear the photo URL field and show current photo info
+            document.getElementById('editFoto').value = '';
+            const currentPhotoText = document.getElementById('currentPhotoText');
+            if (hotel.foto) {
+                if (hotel.foto.startsWith('http')) {
+                    currentPhotoText.textContent = 'URL Link';
+                } else {
+                    currentPhotoText.textContent = 'File Upload';
+                }
+            } else {
+                currentPhotoText.textContent = 'Tidak ada foto';
+            }
             
             const modal = new bootstrap.Modal(document.getElementById('editHotelModal'));
             modal.show();
@@ -805,48 +1867,6 @@ $all_hotels = getAllHotels();
             
             const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
-        }
-        
-        function exportRevenue(format) {
-            window.open(`export_revenue.php?format=${format}&period=monthly`, '_blank');
-        }
-        
-        function printRevenue() {
-            const table = document.getElementById('revenueTable').outerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Laporan Pendapatan - HotelFuture</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1a365d; padding-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        th { background-color: #1a365d; color: white; }
-                        .table-dark th { background-color: #343a40; color: white; }
-                        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-                        .bg-info { background-color: #17a2b8; color: white; }
-                        .text-success { color: #28a745; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>🏨 HotelFuture</h1>
-                        <h2>Laporan Pendapatan Bulanan</h2>
-                        <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
-                    </div>
-                    ${table}
-                    <div class="footer">
-                        <p>Laporan ini digenerate secara otomatis oleh sistem HotelFuture</p>
-                        <p>&copy; 2025 HotelFuture. All rights reserved.</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
         }
     </script>
 </body>

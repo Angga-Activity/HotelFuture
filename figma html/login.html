@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
-    <title>Login - HotelFuture</title>
+    <title>Login - HotelAurora</title>
     <style>
-        /* HotelFuture - Modern Futuristic Hotel Booking System */
         :root {
             --primary-blue: #1a365d;
             --secondary-blue: #2c5282;
@@ -34,17 +32,16 @@
             color: var(--dark-gray);
             line-height: 1.6;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Header Styles */
+        /* Header */
         .header {
             background: var(--gradient);
             color: var(--white);
             padding: 1rem 0;
             box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
 
         .navbar {
@@ -57,115 +54,96 @@
         }
 
         .navbar-brand {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--white);
             text-decoration: none;
-            background: linear-gradient(45deg, #ffffff, #cbd5e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .navbar-nav {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 20px;
+            align-items: center;
         }
 
         .nav-link {
             color: var(--white);
             text-decoration: none;
             font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
             transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .nav-link:hover {
-            color: #cbd5e0;
+            background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
 
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
         }
 
-        /* Button Styles */
-        .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            font-weight: 600;
-            border-radius: 50px;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.4);
-            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
-        }
-
-        .btn-outline-secondary {
-            background: transparent;
-            color: var(--medium-gray);
-            border: 2px solid #e2e8f0;
-            padding: 12px 20px;
-            border-radius: 0 15px 15px 0;
-        }
-
-        .btn-outline-secondary:hover {
-            background: var(--light-gray);
-            border-color: var(--accent-blue);
-        }
-
-        /* Card Styles */
-        .card {
+        .login-container {
             background: var(--white);
             border-radius: 20px;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
             overflow: hidden;
-            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.6s ease forwards;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(26, 54, 93, 0.15);
-        }
-
-        .card-header {
+        .login-header {
             background: var(--gradient);
             color: var(--white);
-            padding: 2rem;
+            padding: 30px;
             text-align: center;
         }
 
-        .card-header h3 {
-            margin-bottom: 0.5rem;
-            font-size: 2rem;
+        .login-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .card-body {
-            padding: 2rem;
+        .login-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
-        /* Form Styles */
+        .login-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
         .form-control {
             width: 100%;
             padding: 15px 20px;
@@ -177,48 +155,255 @@
         }
 
         .form-control:focus {
+            outline: none;
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-            outline: none;
         }
 
-        .form-label {
-            font-weight: 600;
-            color: var(--dark-gray);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group {
-            display: flex;
-            position: relative;
-        }
-
-        .input-group .form-control {
-            border-radius: 15px 0 0 15px;
-            border-right: none;
-        }
-
-        .input-group .form-control:focus {
-            border-right: none;
-        }
-
-        /* Alert Styles */
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1rem;
+        .btn {
+            width: 100%;
+            padding: 15px 20px;
             border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
-        .alert-danger {
-            background: rgba(229, 62, 62, 0.1);
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
+        .btn-primary {
+            background: var(--gradient);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.4);
+        }
+
+        .register-link {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+
+        .register-link a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Demo Testing Section */
+        .demo-section {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .demo-title {
+            text-align: center;
+            font-size: 14px;
+            color: var(--medium-gray);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .demo-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-demo {
+            padding: 12px 16px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 25px;
+            background: transparent;
+            color: var(--accent-blue);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-demo:hover {
+            background: var(--accent-blue);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Icons */
+        .icon-hotel::before { content: "🏨"; }
+        .icon-home::before { content: "🏠"; }
+        .icon-register::before { content: "📝"; }
+        .icon-login::before { content: "🔑"; }
+        .icon-admin::before { content: "👨‍💼"; }
+        .icon-user::before { content: "👤"; }
+        .icon-test::before { content: "🧪"; }
+
+        /* Responsive Design */
+        @media (max-width: 1920px) {
+            .navbar {
+                max-width: 1920px;
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                max-width: 768px;
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+
+            .navbar-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .login-container {
+                max-width: 100%;
+            }
+
+            .login-header {
+                padding: 25px 20px;
+            }
+
+            .login-body {
+                padding: 25px 20px;
+            }
+
+            .demo-buttons {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .navbar {
+                max-width: 390px;
+                padding: 15px;
+            }
+
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .main-content {
+                padding: 15px 10px;
+            }
+
+            .login-header {
+                padding: 20px 15px;
+            }
+
+            .login-body {
+                padding: 20px 15px;
+            }
+
+            .login-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .form-control {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .btn-demo {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading State */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
         }
 
         .alert-success {
@@ -227,154 +412,10 @@
             border-left: 4px solid var(--success);
         }
 
-        /* Footer */
-        .footer {
-            background: var(--primary-blue);
-            color: var(--white);
-            padding: 3rem 0 2rem;
-            margin-top: 4rem;
-        }
-
-        .footer p {
-            color: #cbd5e0;
-            text-decoration: none;
-            margin: 0;
-        }
-
-        /* Layout */
-        .py-5 {
-            padding: 5rem 0;
-        }
-
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: -15px;
-        }
-
-        .justify-content-center {
-            justify-content: center;
-        }
-
-        .col-lg-5 {
-            flex: 0 0 41.666667%;
-            max-width: 41.666667%;
-            padding: 15px;
-        }
-
-        .col-md-7 {
-            flex: 0 0 58.333333%;
-            max-width: 58.333333%;
-            padding: 15px;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-primary {
-            color: var(--primary-blue) !important;
-        }
-
-        .fw-bold {
-            font-weight: bold;
-        }
-
-        .mb-0 {
-            margin-bottom: 0;
-        }
-
-        .mb-3 {
-            margin-bottom: 1rem;
-        }
-
-        .mb-4 {
-            margin-bottom: 1.5rem;
-        }
-
-        .mt-4 {
-            margin-top: 1.5rem;
-        }
-
-        .d-grid {
-            display: grid;
-        }
-
-        /* Demo buttons */
-        .demo-section {
-            background: var(--light-gray);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-top: 2rem;
-        }
-
-        .demo-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-demo {
-            flex: 1;
-            min-width: 120px;
-            padding: 8px 16px;
-            font-size: 14px;
-            background: var(--white);
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-demo:hover {
-            background: var(--primary-blue);
-            color: var(--white);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .navbar-brand {
-                font-size: 1.5rem;
-            }
-            
-            .navbar-nav {
-                gap: 1rem;
-            }
-            
-            .col-lg-5, .col-md-7 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-            
-            .card-body {
-                padding: 1rem;
-            }
-            
-            .demo-buttons {
-                flex-direction: column;
-            }
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.6s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .alert-danger {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
         }
     </style>
 </head>
@@ -382,194 +423,240 @@
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
-            <a class="navbar-brand" href="index.html">
-                🏨 HotelFuture
+            <a class="navbar-brand" href="#" onclick="goHome()">
+                <span class="icon-hotel"></span> HotelAurora
             </a>
             
             <ul class="navbar-nav">
-                <li><a class="nav-link" href="index.html">🏠 Beranda</a></li>
-                <li><a class="nav-link" href="daftar.html">👤 Daftar</a></li>
+                <li><a class="nav-link" href="#" onclick="goHome()"><span class="icon-home"></span> Beranda</a></li>
+                <li><a class="nav-link" href="#" onclick="goRegister()"><span class="icon-register"></span> Daftar</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Login Form -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-5 col-md-7">
-                    <div class="card fade-in">
-                        <div class="card-header">
-                            <h3>🔐 Login</h3>
-                            <p class="mb-0">Masuk ke akun HotelFuture Anda</p>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div id="alertContainer"></div>
-                            
-                            <form id="loginForm">
-                                <div class="form-group">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="password" class="form-label">Password</label>
-                                    <div class="input-group">
-                                        <input type="password" class="form-control" id="password" name="password" required>
-                                        <button class="btn-outline-secondary" type="button" id="togglePassword">
-                                            👁️
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">
-                                        🔐 Login
-                                    </button>
-                                </div>
-                            </form>
-                            
-                            <div class="text-center mt-4">
-                                <p class="mb-0">
-                                    Belum punya akun? 
-                                    <a href="daftar.html" class="text-primary fw-bold">Daftar di sini</a>
-                                </p>
-                            </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-container">
+            <!-- Login Header -->
+            <div class="login-header">
+                <h2><span class="icon-login"></span> Login</h2>
+                <p class="login-subtitle">Masuk ke akun HotelAurora Anda</p>
+            </div>
 
-                            <!-- Demo Login Section -->
-                            <div class="demo-section">
-                                <h6 class="text-center mb-3">🎮 Demo Login (Untuk Testing)</h6>
-                                <div class="demo-buttons">
-                                    <button class="btn-demo" onclick="quickLogin('admin@hotelfuture.com', 'admin123')">
-                                        👨‍💼 Login Admin
-                                    </button>
-                                    <button class="btn-demo" onclick="quickLogin('user@hotelfuture.com', 'user123')">
-                                        👤 Login User
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Login Body -->
+            <div class="login-body">
+                <!-- Alert Messages -->
+                <div id="alertMessage" class="alert"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required 
+                               placeholder="Masukkan email Anda">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required 
+                               placeholder="Masukkan password Anda">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        <span class="icon-login"></span> Login
+                    </button>
+                </form>
+
+                <!-- Register Link -->
+                <div class="register-link">
+                    Belum punya akun? <a href="#" onclick="goRegister()">Daftar di sini</a>
+                </div>
+
+                <!-- Demo Testing Section -->
+                <div class="demo-section">
+                    <div class="demo-title">
+                        <span class="icon-test"></span> Demo Login Untuk Testing
+                    </div>
+                    <div class="demo-buttons">
+                        <button class="btn-demo" onclick="loginAsAdmin()">
+                            <span class="icon-admin"></span> Login Admin
+                        </button>
+                        <button class="btn-demo" onclick="loginAsUser()">
+                            <span class="icon-user"></span> Login User
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </main>
 
+    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="text-center">
-                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
-            </div>
-        </div>
+     <p>&copy; 2025 HotelAurora. All rights reserved.</p>
     </footer>
 
     <script>
+        // Form elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const alertMessage = document.getElementById('alertMessage');
+
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            initLogin();
+            // Focus on email input
+            emailInput.focus();
+            
+            // Add form validation
+            setupFormValidation();
         });
 
-        function initLogin() {
-            // Toggle password visibility
-            document.getElementById('togglePassword').addEventListener('click', function() {
-                const password = document.getElementById('password');
-                const icon = this;
-                
-                if (password.type === 'password') {
-                    password.type = 'text';
-                    icon.textContent = '🙈';
-                } else {
-                    password.type = 'password';
-                    icon.textContent = '👁️';
-                }
-            });
-
-            // Handle login form
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                handleLogin();
-            });
+        // Form validation
+        function setupFormValidation() {
+            emailInput.addEventListener('input', validateEmail);
+            passwordInput.addEventListener('input', validatePassword);
         }
 
-        function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                showAlert('Email dan password wajib diisi', 'danger');
-                return;
+        function validateEmail() {
+            const email = emailInput.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                emailInput.style.borderColor = 'var(--danger)';
+            } else {
+                emailInput.style.borderColor = '#e2e8f0';
             }
-
-            // Simulate login process
-            showAlert('Memproses login...', 'info');
-
-            setTimeout(() => {
-                // Demo login logic
-                if (email === 'admin@hotelfuture.com' && password === 'admin123') {
-                    showAlert('Login berhasil! Mengarahkan ke dashboard admin...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'admin.html';
-                    }, 1500);
-                } else if (email === 'user@hotelfuture.com' && password === 'user123') {
-                    showAlert('Login berhasil! Mengarahkan ke dashboard user...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'user.html';
-                    }, 1500);
-                } else {
-                    showAlert('Email atau password salah', 'danger');
-                }
-            }, 1000);
         }
 
-        function quickLogin(email, password) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-            showAlert(`Auto-filled dengan ${email.includes('admin') ? 'Admin' : 'User'} credentials`, 'info');
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            if (password && password.length < 6) {
+                passwordInput.style.borderColor = 'var(--danger)';
+            } else {
+                passwordInput.style.borderColor = '#e2e8f0';
+            }
         }
 
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertClass = type === 'danger' ? 'alert-danger' : 
-                              type === 'success' ? 'alert-success' : 
-                              'alert-info';
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
             
-            const alertIcon = type === 'danger' ? '⚠️' : 
-                             type === 'success' ? '✅' : 
-                             'ℹ️';
-
-            const alert = document.createElement('div');
-            alert.className = `alert ${alertClass}`;
-            alert.innerHTML = `${alertIcon} ${message}`;
-            
-            alertContainer.innerHTML = '';
-            alertContainer.appendChild(alert);
-            
-            // Auto remove after 5 seconds
+            // Auto hide after 5 seconds
             setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.parentNode.removeChild(alert);
-                }
+                alertMessage.style.display = 'none';
             }, 5000);
         }
 
-        // Add fade-in animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.classList.add('fade-in');
-            });
+        // Loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<span class="loading"></span> Memproses...';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span class="icon-login"></span> Login';
+            }
+        }
+
+        // Handle form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            // Validate inputs
+            if (!email || !password) {
+                showAlert('Email dan password harus diisi!', 'danger');
+                return;
+            }
+            
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert('Format email tidak valid!', 'danger');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert('Password minimal 6 karakter!', 'danger');
+                return;
+            }
+            
+            // Simulate login process
+            performLogin(email, password);
         });
+
+        function performLogin(email, password) {
+            setLoading(true);
+            
+            // Simulate API call
+            setTimeout(() => {
+                setLoading(false);
+                
+                // Mock login validation
+                if (email === 'admin@HotelAurora.com' && password === 'admin123') {
+                    showAlert('Login berhasil! Mengarahkan ke dashboard admin...', 'success');
+                    setTimeout(() => {
+                        alert('Berhasil login sebagai Admin!\n\nDalam implementasi nyata:\n- Akan redirect ke admin dashboard\n- Session akan tersimpan\n- Token akan diset');
+                    }, 1500);
+                } else if (email === 'user@HotelAurora.com' && password === 'user123') {
+                    showAlert('Login berhasil! Mengarahkan ke dashboard user...', 'success');
+                    setTimeout(() => {
+                        alert('Berhasil login sebagai User!\n\nDalam implementasi nyata:\n- Akan redirect ke user dashboard\n- Session akan tersimpan\n- Token akan diset');
+                    }, 1500);
+                } else {
+                    showAlert('Email atau password salah!', 'danger');
+                }
+            }, 2000);
+        }
+
+        // Demo login functions
+        function loginAsAdmin() {
+            emailInput.value = 'admin@HotelAurora.com';
+            passwordInput.value = 'admin123';
+            showAlert('Data admin telah diisi. Klik Login untuk masuk sebagai admin.', 'success');
+        }
+
+        function loginAsUser() {
+            emailInput.value = 'user@HotelAurora.com';
+            passwordInput.value = 'user123';
+            showAlert('Data user telah diisi. Klik Login untuk masuk sebagai user.', 'success');
+        }
+
+        // Navigation functions
+        function goHome() {
+            alert('Mengarahkan ke halaman beranda...');
+        }
+
+        function goRegister() {
+            alert('Mengarahkan ke halaman registrasi...');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Alt + A for admin login
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                loginAsAdmin();
+            }
+            
+            // Alt + U for user login
+            if (e.altKey && e.key === 'u') {
+                e.preventDefault();
+                loginAsUser();
+            }
+        });
+
+        // Auto-fill demo on page load for testing
+        setTimeout(() => {
+            if (!emailInput.value && !passwordInput.value) {
+                // Show hint for demo buttons
+                showAlert('💡 Tip: Gunakan tombol demo di bawah untuk testing cepat!', 'success');
+            }
+        }, 1000);
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-

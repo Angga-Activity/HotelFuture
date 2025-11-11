@@ -4,7 +4,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'asep');
 
-define('SITE_NAME', 'HotelFuture');
+define('SITE_NAME', 'HotelAurora');
 define('SITE_URL', 'http://localhost');
 define('UPLOAD_PATH', 'uploads/');
 

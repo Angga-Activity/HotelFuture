@@ -20,7 +20,7 @@ $locations = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HotelFuture - Sistem Pemesanan Hotel Masa Depan</title>
+    <title>🏨 HotelAurora - Sistem Pemesanan Hotel Masa Depan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
@@ -29,19 +29,14 @@ $locations = $stmt->fetchAll();
     <header class="header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <i class="fas fa-hotel"></i> HotelFuture
-                </a>
-                
+              <h2>🏨 HotelAurora</h2>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="index.php">Beranda</a>
-                        </li>
+                       
                         <?php if (isLoggedIn()): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= isAdmin() ? 'admin.php' : 'user.php' ?>">
@@ -76,11 +71,10 @@ $locations = $stmt->fetchAll();
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h1 class="display-4 fw-bold text-primary mb-4">
-                        Selamat Datang di <span class="text-gradient">HotelFuture</span>
+                        Selamat Datang di <span class="text-gradient">🏨 HotelAurora</span>
                     </h1>
                     <p class="lead mb-4">
-                        Sistem pemesanan hotel masa depan dengan teknologi terdepan. 
-                        Temukan hotel impian Anda dengan mudah dan nyaman.
+                       Sistem pemesanan Hotel Aurora yang modern dan cepat. Anda bisa menemukan kamar yang tepat dengan mudah dan nyaman.
                     </p>
                     <?php if (!isLoggedIn()): ?>
                         <a href="daftar.php" class="btn btn-primary btn-lg me-3">
@@ -90,7 +84,6 @@ $locations = $stmt->fetchAll();
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-image text-center">
-                        <i class="fas fa-building display-1 text-primary opacity-75"></i>
                     </div>
                 </div>
             </div>
@@ -146,7 +139,7 @@ $locations = $stmt->fetchAll();
             </div>
         </div>
     </section>
->
+
     <section class="hotels-section py-5">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -235,7 +228,7 @@ $locations = $stmt->fetchAll();
 
     <section class="features-section py-5 bg-light">
         <div class="container">
-            <h2 class="text-center mb-5">Mengapa Memilih HotelFuture?</h2>
+            <h2 class="text-center mb-5">Mengapa Memilih 🏨 HotelAurora?</h2>
             
             <div class="row">
                 <div class="col-lg-3 col-md-6 mb-4">
@@ -280,20 +273,20 @@ $locations = $stmt->fetchAll();
             </div>
         </div>
     </section>
->
+
     <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
 
     <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <h5><i class="fas fa-hotel"></i> HotelFuture</h5>
-                    <p>Sistem pemesanan hotel masa depan dengan teknologi terdepan untuk pengalaman booking yang tak terlupakan.</p>
+                    <h5>🏨 HotelAurora</h5>
+                    <p>Sistem pemesanan Hotel Aurora yang modern dengan teknologi terbaru. Anda mendapatkan pengalaman booking yang mudah dan berkesan..</p>
                 </div>
                 
                 <div class="col-lg-4 mb-4">
                     <h5>Kontak</h5>
-                    <p><i class="fas fa-envelope"></i> ujangangga@hotelfuture.com</p>
+                    <p><i class="fas fa-envelope"></i> ujangangga@hotelaurora.com</p>
                     <p><i class="fas fa-phone"></i> +62 821 2995 2530</p>
                     <p><i class="fas fa-map-marker-alt"></i> Bandung, Indonesia</p>
                 </div>
@@ -301,7 +294,7 @@ $locations = $stmt->fetchAll();
               <div class="col-lg-4 mb-4">
     <h5>Ikuti Kami</h5>
     <div class="social-links">
-        <a href="https://wa.me/6282129952530 target="_blank" class="text-light me-3">
+        <a href="https://wa.me/6282129952530" target="_blank" class="text-light me-3">
             <i class="fab fa-whatsapp fa-2x"></i>
         </a>
         <a href="https://instagram.com/angga_Activity" target="_blank" class="text-light me-3">
@@ -317,7 +310,7 @@ $locations = $stmt->fetchAll();
             <hr class="my-4">
             
             <div class="text-center">
-                <p>&copy; 2025 HotelFuture. All rights reserved.</p>
+                <p>&copy; 2025 🏨 HotelAurora. All rights reserved.</p>
             </div>
         </div>
     </footer>
