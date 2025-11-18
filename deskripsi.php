@@ -227,21 +227,22 @@ $must_login = !isLoggedIn();
                                             <div class="form-group mb-3">
                                                 <label class="form-label">Kamar</label>
                                                 <select class="form-select" name="rooms" id="roomCount" required>
-                                                    <?php for ($i = 1; $i <= min(5, $hotel['stok_kamar']); $i++): ?>
-                                                        <option value="<?= $i ?>"><?= $i ?></option>
+                                                    <?php for ($i = 1; $i <= $hotel['stok_kamar']; $i++): ?>
+                                                        <option value="<?= $i ?>"><?= $i ?> kamar</option>
                                                     <?php endfor; ?>
                                                 </select>
+                                                <small class="form-text text-muted">Tersedia <?= $hotel['stok_kamar'] ?> kamar</small>
                                             </div>
                                         </div>
                                         
                                         <div class="col-6">
                                             <div class="form-group mb-3">
                                                 <label class="form-label">Tamu</label>
-                                                <select class="form-select" name="guests" required>
-                                                    <?php for ($i = 1; $i <= 8; $i++): ?>
-                                                        <option value="<?= $i ?>"><?= $i ?></option>
-                                                    <?php endfor; ?>
+                                                <select class="form-select" name="guests" id="guestCount" required>
+                                                    <option value="1">1 tamu</option>
+                                                    <option value="2">2 tamu</option>
                                                 </select>
+                                                <small class="form-text text-muted">Maksimal 2 tamu per kamar</small>
                                             </div>
                                         </div>
                                     </div>
@@ -299,7 +300,31 @@ $must_login = !isLoggedIn();
         // Calculate price when dates change
         document.getElementById('checkinDate').addEventListener('change', calculatePrice);
         document.getElementById('checkoutDate').addEventListener('change', calculatePrice);
-        document.getElementById('roomCount').addEventListener('change', calculatePrice);
+        document.getElementById('roomCount').addEventListener('change', function() {
+            updateGuestOptions();
+            calculatePrice();
+        });
+        
+        // Update guest options based on room count
+        function updateGuestOptions() {
+            const roomCount = parseInt(document.getElementById('roomCount').value);
+            const guestSelect = document.getElementById('guestCount');
+            const maxGuests = roomCount * 2; // 2 guests per room
+            
+            // Clear existing options
+            guestSelect.innerHTML = '';
+            
+            // Add new options up to maximum capacity
+            for (let i = 1; i <= maxGuests; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + ' tamu';
+                guestSelect.appendChild(option);
+            }
+        }
+        
+        // Initialize guest options on page load
+        updateGuestOptions();
         
         function calculatePrice() {
             const checkin = document.getElementById('checkinDate').value;

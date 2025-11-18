@@ -48,6 +48,8 @@ if ($_POST) {
         $error = 'Tanggal check-out harus setelah check-in';
     } elseif ($jumlah_kamar > $hotel['stok_kamar']) {
         $error = 'Jumlah kamar melebihi stok yang tersedia';
+    } elseif ($jumlah_orang > ($jumlah_kamar * 2)) {
+        $error = 'Jumlah tamu melebihi kapasitas kamar. Maksimal 2 orang per kamar.';
     } else {
         // Create booking
         $booking_id = createBooking($_SESSION['user_id'], $hotel_id, $tanggal_checkin, $tanggal_checkout, $jumlah_orang, $jumlah_kamar);
@@ -200,7 +202,7 @@ if ($checkin && $checkout && validateDate($checkin) && validateDate($checkout)) 
                                                     <label for="jumlah_kamar" class="form-label">Jumlah Kamar *</label>
                                                     <select class="form-select" id="jumlah_kamar" name="jumlah_kamar" 
                                                             data-max-stock="<?= $hotel['stok_kamar'] ?>" required>
-                                                        <?php for ($i = 1; $i <= min(5, $hotel['stok_kamar']); $i++): ?>
+                                                        <?php for ($i = 1; $i <= $hotel['stok_kamar']; $i++): ?>
                                                             <option value="<?= $i ?>" <?= $i == $rooms ? 'selected' : '' ?>>
                                                                 <?= $i ?> kamar
                                                             </option>
@@ -215,14 +217,16 @@ if ($checkin && $checkout && validateDate($checkin) && validateDate($checkout)) 
                                                 <div class="form-group mb-3">
                                                     <label for="jumlah_orang" class="form-label">Jumlah Tamu *</label>
                                                     <select class="form-select" id="jumlah_orang" name="jumlah_orang" required>
-                                                        <?php for ($i = 1; $i <= 8; $i++): ?>
+                                                        <?php 
+                                                        $max_guests = min($rooms * 2, $hotel['stok_kamar'] * 2); // Maximum 2 guests per room
+                                                        for ($i = 1; $i <= $max_guests; $i++): ?>
                                                             <option value="<?= $i ?>" <?= $i == $guests ? 'selected' : '' ?>>
-                                                                <?= $i ?> orang
+                                                                <?= $i ?> tamu
                                                             </option>
                                                         <?php endfor; ?>
                                                     </select>
-                                                    <div class="form-text">Maksimal 4 orang per kamar</div>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="form-text">Maksimal 2 tamu per kamar</div>
+                                                    <div class="invalid-feedback" id="guest-validation-error"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -263,7 +267,7 @@ if ($checkin && $checkout && validateDate($checkin) && validateDate($checkout)) 
                                 </div>
                                 
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="submitButton">
                                         <i class="fas fa-arrow-right"></i> Lanjut ke Pembayaran
                                     </button>
                                 </div>
@@ -343,7 +347,117 @@ if ($checkin && $checkout && validateDate($checkin) && validateDate($checkout)) 
         document.getElementById('tanggal_checkin').min = today;
         document.getElementById('tanggal_checkout').min = today;
         
-        // Calculate price on load and when inputs change
+        // Add event listeners
+        document.getElementById('jumlah_kamar').addEventListener('change', function() {
+            updateGuestOptions();
+            validateGuestCapacity();
+            calculateTotalPrice();
+        });
+        
+        document.getElementById('jumlah_orang').addEventListener('change', function() {
+            validateGuestCapacity();
+        });
+        
+        document.getElementById('tanggal_checkin').addEventListener('change', calculateTotalPrice);
+        document.getElementById('tanggal_checkout').addEventListener('change', calculateTotalPrice);
+        
+        // Update guest options based on room count
+        function updateGuestOptions() {
+            const roomCount = parseInt(document.getElementById('jumlah_kamar').value);
+            const guestSelect = document.getElementById('jumlah_orang');
+            const currentGuests = parseInt(guestSelect.value);
+            const maxGuests = roomCount * 2; // 2 guests per room
+            
+            // Clear existing options
+            guestSelect.innerHTML = '';
+            
+            // Add new options up to maximum capacity
+            for (let i = 1; i <= maxGuests; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + ' tamu';
+                
+                // Keep current selection if still valid
+                if (i === currentGuests && currentGuests <= maxGuests) {
+                    option.selected = true;
+                }
+                
+                guestSelect.appendChild(option);
+            }
+            
+            // If current guests exceed new capacity, select maximum
+            if (currentGuests > maxGuests) {
+                guestSelect.value = maxGuests;
+            }
+        }
+        
+        // Validate guest capacity
+        function validateGuestCapacity() {
+            const roomCount = parseInt(document.getElementById('jumlah_kamar').value);
+            const guestCount = parseInt(document.getElementById('jumlah_orang').value);
+            const maxGuests = roomCount * 2;
+            const errorDiv = document.getElementById('guest-validation-error');
+            const submitButton = document.getElementById('submitButton');
+            
+            if (guestCount > maxGuests) {
+                errorDiv.textContent = `Jumlah tamu melebihi kapasitas. Maksimal ${maxGuests} tamu untuk ${roomCount} kamar.`;
+                errorDiv.style.display = 'block';
+                document.getElementById('jumlah_orang').classList.add('is-invalid');
+                submitButton.disabled = true;
+                return false;
+            } else {
+                errorDiv.style.display = 'none';
+                document.getElementById('jumlah_orang').classList.remove('is-invalid');
+                submitButton.disabled = false;
+                return true;
+            }
+        }
+        
+        // Calculate total price
+        function calculateTotalPrice() {
+            const checkin = document.getElementById('tanggal_checkin').value;
+            const checkout = document.getElementById('tanggal_checkout').value;
+            const rooms = parseInt(document.getElementById('jumlah_kamar').value);
+            const pricePerNight = parseInt(document.getElementById('hargaPerMalam').value);
+            
+            if (checkin && checkout) {
+                const checkinDate = new Date(checkin);
+                const checkoutDate = new Date(checkout);
+                const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+                
+                if (nights > 0) {
+                    const total = nights * rooms * pricePerNight;
+                    document.getElementById('jumlahMalam').textContent = nights + ' malam';
+                    document.getElementById('totalHarga').textContent = formatRupiah(total);
+                    document.getElementById('totalHargaHidden').value = total;
+                    
+                    // Update checkout minimum date
+                    const nextDay = new Date(checkinDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    document.getElementById('tanggal_checkout').min = nextDay.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('jumlahMalam').textContent = '-';
+                    document.getElementById('totalHarga').textContent = '-';
+                    document.getElementById('totalHargaHidden').value = 0;
+                }
+            }
+        }
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+        
+        // Form validation before submit
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            if (!validateGuestCapacity()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Initialize on page load
+        updateGuestOptions();
+        validateGuestCapacity();
         calculateTotalPrice();
     </script>
 </body>

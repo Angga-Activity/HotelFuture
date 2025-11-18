@@ -90,6 +90,26 @@ function processPayment($booking_id, $metode, $nomor_akun) {
     try {
         $pdo->beginTransaction();
         
+        // Get booking details first
+        $stmt = $pdo->prepare("SELECT id_hotel, jumlah_kamar FROM pemesanan WHERE id_pemesanan = ?");
+        $stmt->execute([$booking_id]);
+        $booking = $stmt->fetch();
+        
+        if (!$booking) {
+            $pdo->rollback();
+            return false;
+        }
+        
+        // Check if hotel has enough stock
+        $stmt = $pdo->prepare("SELECT stok_kamar FROM hotel WHERE id_hotel = ?");
+        $stmt->execute([$booking['id_hotel']]);
+        $hotel = $stmt->fetch();
+        
+        if (!$hotel || $hotel['stok_kamar'] < $booking['jumlah_kamar']) {
+            $pdo->rollback();
+            return false;
+        }
+        
         // Insert payment record
         $stmt = $pdo->prepare("INSERT INTO pembayaran (id_pemesanan, metode, nomor_akun, tanggal_pembayaran, status_pembayaran) VALUES (?, ?, ?, NOW(), 'berhasil')");
         $stmt->execute([$booking_id, $metode, $nomor_akun]);
@@ -98,13 +118,9 @@ function processPayment($booking_id, $metode, $nomor_akun) {
         $stmt = $pdo->prepare("UPDATE pemesanan SET status = 'berhasil' WHERE id_pemesanan = ?");
         $stmt->execute([$booking_id]);
         
-        // Get booking details to update hotel stock
-        $stmt = $pdo->prepare("SELECT id_hotel, jumlah_kamar FROM pemesanan WHERE id_pemesanan = ?");
-        $stmt->execute([$booking_id]);
-        $booking = $stmt->fetch();
-        
-        // Update hotel stock
-        updateHotelStock($booking['id_hotel'], $booking['jumlah_kamar']);
+        // Update hotel stock - FIXED: Use the exact number of rooms booked
+        $stmt = $pdo->prepare("UPDATE hotel SET stok_kamar = stok_kamar - ? WHERE id_hotel = ?");
+        $stmt->execute([$booking['jumlah_kamar'], $booking['id_hotel']]);
         
         $pdo->commit();
         return true;
@@ -204,81 +220,6 @@ function getRevenueReport($period = 'monthly') {
     
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll();
-}
-
-// New function for filtered revenue report
-function getFilteredRevenueReport($period, $start_date, $end_date) {
-    global $pdo;
-    
-    // Auto-update booking status first
-    updateBookingStatusByDate();
-    
-    $params = [];
-    
-    if ($period === 'daily') {
-        // Daily filter: from date to date
-        $sql = "SELECT DATE(p.tanggal_pemesanan) as periode, 
-                       SUM(p.total_harga) as total_pendapatan, 
-                       COUNT(*) as jumlah_transaksi
-                FROM pemesanan p 
-                WHERE p.status IN ('berhasil', 'selesai') 
-                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
-                GROUP BY DATE(p.tanggal_pemesanan) 
-                ORDER BY periode ASC";
-        $params = [$start_date, $end_date];
-        
-    } elseif ($period === 'monthly') {
-        // Monthly filter: from month to month
-        $start_month = $start_date . '-01';
-        $end_month = $end_date . '-31';
-        
-        $sql = "SELECT DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') as periode, 
-                       SUM(p.total_harga) as total_pendapatan, 
-                       COUNT(*) as jumlah_transaksi
-                FROM pemesanan p 
-                WHERE p.status IN ('berhasil', 'selesai') 
-                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
-                GROUP BY DATE_FORMAT(p.tanggal_pemesanan, '%Y-%m') 
-                ORDER BY periode ASC";
-        $params = [$start_month, $end_month];
-        
-    } elseif ($period === 'yearly') {
-        // Yearly filter: from year to year
-        $start_year = $start_date . '-01-01';
-        $end_year = $end_date . '-12-31';
-        
-        $sql = "SELECT YEAR(p.tanggal_pemesanan) as periode, 
-                       SUM(p.total_harga) as total_pendapatan, 
-                       COUNT(*) as jumlah_transaksi
-                FROM pemesanan p 
-                WHERE p.status IN ('berhasil', 'selesai') 
-                AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
-                GROUP BY YEAR(p.tanggal_pemesanan) 
-                ORDER BY periode ASC";
-        $params = [$start_year, $end_year];
-    }
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $revenue_data = $stmt->fetchAll();
-    
-    // Calculate totals
-    $total_revenue = 0;
-    $total_transactions = 0;
-    
-    foreach ($revenue_data as $row) {
-        $total_revenue += $row['total_pendapatan'];
-        $total_transactions += $row['jumlah_transaksi'];
-    }
-    
-    $average_revenue = $total_transactions > 0 ? $total_revenue / $total_transactions : 0;
-    
-    return [
-        'revenue_data' => $revenue_data,
-        'total_revenue' => $total_revenue,
-        'total_transactions' => $total_transactions,
-        'average_revenue' => $average_revenue
-    ];
 }
 
 // Utility Functions

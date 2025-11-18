@@ -132,10 +132,6 @@ HotelAurora/
 ├── 📄 script.js              # JavaScript interactions
 ├── 📄 validator.js           # Validasi form client-side
 ├── 📄 HotelAurora.sql        # Database schema + sample data
-├── 📁 api/
-│   ├── 📄 hotel.php          # API data hotel
-│   ├── 📄 pemesanan.php      # API booking
-│   └── 📄 laporan.php        # API laporan
 └── 📄 README.md              # Dokumentasi ini
 ```
 
@@ -318,7 +314,7 @@ MIT License - lihat file [LICENSE](LICENSE) untuk detail lengkap.
 
 > **Note**: Sistem ini dibuat untuk keperluan pembelajaran dan demo. Untuk production, pastikan menambahkan security layer tambahan dan testing yang komprehensif.
 =======
-**Dibuat dengan ❤️ oleh Angga Kaseppp Pisannnn**
+**Dibuat dengan ❤️ oleh AnggaTzy**
 
 > **Note**: Sistem ini dibuat untuk keperluan pembelajaran dan demo. Untuk production, pastikan menambahkan security layer tambahan dan testing yang komprehensif.
 >>>>>>> c9a955e46ae1c5c528eccc22d2ab38b737d72ce3
